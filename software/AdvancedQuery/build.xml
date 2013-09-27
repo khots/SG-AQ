@@ -1,0 +1,575 @@
+<?xml version ="1.0"?>
+<!--Ant Script for create Build for Query -->
+<project name="Query Build" default="compile" xmlns:ivy="antlib:org.apache.ivy.ant">
+	<import file="./src/conf/build-properties.xml" />
+	<!--define require dir and Properties for <if> </if> tag-->
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<pathelement location="./src/lib/server/ant-contrib.jar" />
+		</classpath>
+	</taskdef>
+
+	<!--define require dir and Properties -->
+	<property file="./src/conf/advanceQuery.properties" />
+	<property name="base.dir" value="." />
+	<property name="software.dir" value=".." />
+	<property name="src.dir" value="${base.dir}/src/java" />
+	<property name="test.dir" value="${base.dir}/test/unit/java" />
+	<property name="temp.dir" value="${software.dir}/target/temp" />
+	<property name="target.dir" value="${software.dir}/target" />
+	<property name="classes.dir" value="${temp.dir}/classes"/>
+	<property name="local.ivy.repo.dir" value="${software.dir}/local-ivy-repo"/>
+	<property name="lib.dir" value="${base.dir}/src/lib/client" />
+	<property name="junit.jar" value="${lib.dir}/junit-3.8.1.jar" />
+	<!-- csm related properties -->
+	<property name="mysql.dialect.string" value="org.hibernate.dialect.MySQLDialect" />
+	<property name="junit.report.dir" value="${target.dir}/reports/junit" />
+	<property name="cobertura.location" value="${base.dir}/test/unit/resources/cobertura" />
+	<property name="test.instrumented.dir" value="${base.dir}/test/unit/resources/cobertura/instrumentedClasses" />
+	<property name="cobertura.lib" value="${cobertura.location}/coberturaLib" />
+	<property name="coverage.dir" value="${target.dir}/reports/coverage" />
+
+	<path id="cobertura.classpath">
+		<fileset dir="${cobertura.lib}">
+			<include name="cobertura.jar" />
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+
+	<loadfile property="dist.revision" srcFile="../../.svn/entries">
+		<filterchain>
+			<headfilter lines="1" skip="4" />
+		</filterchain>
+	</loadfile>
+
+	<!-- flex related properties -->
+	<property name="FLEX_HOME" value="C:/Flex SDK 2" />
+	<property name="FLEX_APP_ROOT" value="${base.dir}/src/web/flexclient" />
+	<property name="flex.dir" value="${base.dir}/src/web/flex" />
+	<!-- flex related properties finish -->
+	<path id="app.classpath">
+		<fileset dir="${lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<!-- sub tasks -->
+	<target name="init" description="initialize">
+		<!-- Create the time stamp -->
+		<tstamp />
+		<!-- Create the build directory structure used by compile -->
+		<delete dir="${classes.dir}" />
+		<mkdir dir="${classes.dir}" />
+		<delete dir="${test.instrumented.dir}" />
+		<mkdir dir="${test.instrumented.dir}" />
+	</target>
+
+	<target name="clean" description="clean up">
+		<delete includeemptydirs="true">
+			<fileset dir="${classes.dir}">
+				<include name="**/*" />
+				<exclude name="CVS" />
+			</fileset>
+		</delete>
+	</target>
+
+	<!-- Compile all files, generated and hand-written -->
+	<target name="compile" depends="init,retrieve-ivy-files">
+		<javac destdir="${classes.dir}" includes="**/*.*" includeAntRuntime="false" debug="true">
+			<src path="${src.dir}" />
+			<classpath>
+				<fileset dir="${lib.dir}">
+					<include name="*.jar" />
+				</fileset>
+			</classpath>
+			<classpath refid="cobertura.classpath" />
+		</javac>
+		<copy todir="${classes.dir}">
+			<fileset dir="${src.dir}">
+				<include name="**/*.properties" />
+				<include name="**/*.xml" />
+				<include name="**/*.xsl" />
+				<include name="**/*.hbm.xml" />
+				<include name="**/*.ser" />
+			</fileset>
+		</copy>
+		<copy todir="${classes.dir}">
+				<fileset dir="${src.dir}">
+					<include name="**/*.vm" />
+				 </fileset>
+		</copy>
+	</target>
+	<target name="create_zip" depends="build_jar">
+		<delete file="${temp.dir}/MANIFEST.MF" />
+		<mkdir dir="${temp.dir}/META-INF" />
+		<manifest file="${temp.dir}/META-INF/MANIFEST.MF">
+			<attribute name="Built-By" value="${user.name}" />
+			<attribute name="Version" value="${application.name} ${aq.jar.version}" />
+			<attribute name="CSM-Version" value="${csm.version}" />
+			<attribute name="caCore-Version" value="${cacore.version}" />
+			<attribute name="Build-on" value="${TODAY}" />
+		</manifest>
+		<!--
+		<copy file="./build/query.war" todir="${zip.dir}" overwrite="true" />
+		<copy file="./build/dynamicExtensions.war" todir="${zip.dir}" overwrite="true" />
+		-->
+		<copy file="./src/conf/query-ds.xml" todir="${dist.dir}" overwrite="true" />
+		<!--
+		<copy file="./src/conf/log4j.properties" todir="${zip.dir}" overwrite="true" />
+		-->
+		<copy file="./src/conf/queryInstall.properties" todir="${dist.dir}" overwrite="true" />
+		<copy file="./src/conf/queryMainTiles.properties" todir="${dist.dir}" overwrite="true" />
+		<copy file="./src/conf/queryHibernateCfg.properties" todir="${dist.dir}" overwrite="true" />
+		<copy file="${classes.dir}/query.properties" todir="${dist.dir}" overwrite="true" />
+		<copy file="${classes.dir}/queryDbutil.properties" todir="${dist.dir}" overwrite="true" />
+		<copy file="./src/conf/build-properties.xml" todir="${dist.dir}" overwrite="true" />
+		<copy file="${temp.dir}/META-INF/MANIFEST.MF" todir="${dist.dir}" overwrite="true" />
+		<copy file="./src/conf/deploy.xml" todir="${dist.dir}" overwrite="true" />
+		<copy file="./src/conf/queryintegration.xml" todir="${dist.dir}" overwrite="true" />
+		<copy file="./src/conf/advanceQuery.properties" todir="${dist.dir}" overwrite="true" />
+		<copy file="./src/conf/aqupgrade.xml" todir="${dist.dir}" overwrite="true" />
+		<!--
+		<copy file="log4j.xml" todir="${zip.dir}" overwrite="true" />
+		<copy file="login-config.xml" todir="${zip.dir}" overwrite="true" />
+		<copy file="./src/conf/properties-service.xml" todir="${zip.dir}" overwrite="true" />
+		-->
+		<!--Copying the advance query jar to Zip file -->
+		<copy file="${local.ivy.repo.dir}/AdvanceQuery.jar" todir="${dist.dir}" overwrite="true" />
+		<copy todir="${dist.dir}/query-properties" overwrite="true">
+			<fileset dir="${base.dir}/src/conf/query-properties">
+				<exclude name="Accessibility.txt" />
+				<exclude name="ContactUs.txt" />
+				<exclude name="Disclaimer.txt" />
+				<exclude name="LabelGenerator.Properties" />
+				<exclude name="log4jConfig.xml" />
+				<exclude name="PrivacyNotice.txt" />
+				<exclude name="upt.hibernate.cfg.xml" />
+				<exclude name="ApplicationSecurityConfig.xml" />
+			</fileset>
+		</copy>
+		<copy todir="${dist.dir}/META-INF" overwrite="true">
+					<fileset dir="${temp.dir}/META-INF" />
+		</copy>
+		<!-- Copy these two config files from tokenizedFiles directory which contains the tekenized files -->
+		<!--
+		<copy todir="${src.classes.dir}/WEB-INF/classes" overwrite="true">
+				<fileset dir="${base.dir}/src/resources/tokenizedFiles">
+					<include name="QueryHibernate.cfg.xml" />
+					<include name="DynamicExtensionsHibernate.cfg.xml" />
+				</fileset>
+		</copy>
+		-->
+		<copy todir="${dist.dir}" overwrite="true">
+			<fileset dir="${base.dir}/src/conf">
+				<include name="advancequery-struts-config.xml" />
+				<include name="AdvanceQuery-tiles-defs.xml" />
+			</fileset>
+		</copy>
+
+		<copy todir="${dist.dir}" overwrite="true">
+			<fileset dir="${classes.dir}">
+				<include name="QueryHibernate.cfg.xml" />
+				<include name="DynamicExtensionsHibernate.cfg.xml" />
+				<include name="dbutil.properties" />
+				<!--<include name = "dynamicUI.xml"/> -->
+				<include name="ApplicationResources.properties" />
+			</fileset>
+		</copy>
+
+		<!---Copying css folder -->
+		<copy todir="${dist.dir}/css" overwrite="true">
+			<fileset dir="${base.dir}/src/web/stylesheets" />
+		</copy>
+
+		<!--Copying jss folder -->
+		<copy todir="${dist.dir}/jss" overwrite="true">
+			<fileset dir="${base.dir}/src/web/javascripts" />
+		</copy>
+		<!--Copying dhtml folder -->
+	 	
+		<copy todir="${dist.dir}/dhtmlx_suite" overwrite="true">
+			<fileset dir="${base.dir}/src/web/dhtmlx_suite" />
+		</copy>
+		
+		<copy todir="${dist.dir}/patch" overwrite="true">
+			<fileset dir="${base.dir}/patch"/>
+		</copy>
+				
+		<!--Coying Images -->
+		<copy todir="${dist.dir}/images" overwrite="true">
+		<!--
+			<fileset dir = "${base.dir}/src/web/images/advQuery/dagViewImages">
+				<include name="**/*.*" />
+			</fileset>
+			<fileset dir = "${base.dir}/src/web/images/advQuery/uIEnhancementImages">
+				<exclude name="**/*" />
+			</fileset>
+		-->
+			<fileset dir="${base.dir}/src/web/images">
+				<exclude name="**/advQuery/a.gif" />
+				<exclude name="**/advQuery/appLogo.gif" />
+				<exclude name="**/advQuery/Arm_blk.gif" />
+				<exclude name="**/advQuery/Arm_col.gif" />
+				<exclude name="**/advQuery/bannerHome2.gif" />
+				<exclude name="**/advQuery/bluebox.gif" />
+				<exclude name="**/advQuery/cabio58.gif" />
+				<exclude name="**/advQuery/caTISSUE_logo.gif" />
+				<exclude name="**/advQuery/csm.gif" />
+				<exclude name="**/advQuery/Cycle_blk.gif" />
+				<exclude name="**/advQuery/Cycle_col.gif" />
+				<exclude name="**/advQuery/Distribution.GIF" />
+				<exclude name="**/advQuery/DistributionProtocol.GIF" />
+				<exclude name="**/advQuery/dot.gif" />
+				<exclude name="**/advQuery/e.gif" />
+				<exclude name="**/advQuery/footer_firstgov.gif" />
+				<exclude name="**/advQuery/footer_hhs.gif" />
+				<exclude name="**/advQuery/footer_nci.gif" />
+				<exclude name="**/advQuery/footer_nih.gif" />
+				<exclude name="**/advQuery/i.gif" />
+				<exclude name="**/advQuery/InstitutionLogo.gif" />
+				<exclude name="**/advQuery/logot.gif" />
+				<exclude name="**/advQuery/logotype.gif" />
+				<exclude name="**/advQuery/logotype.jpg" />
+				<exclude name="**/advQuery/Participant.GIF" />
+				<exclude name="**/advQuery/pendingAliquot.gif" />
+				<exclude name="**/advQuery/pendingDerive.gif" />
+				<exclude name="**/advQuery/pendingEvent.gif" />
+				<exclude name="**/advQuery/pendingPhase.gif" />
+				<exclude name="**/advQuery/pendingSCG.gif" />
+				<exclude name="**/advQuery/pendingSpecimen.gif" />
+				<exclude name="**/advQuery/phase.gif" />
+				<exclude name="**/advQuery/Phase_col.gif" />
+				<exclude name="**/advQuery/redbox.gif" />
+				<exclude name="**/advQuery/sccLogo.gif" />
+				<exclude name="**/advQuery/sdk.gif" />
+				<exclude name="**/advQuery/sdk.jpg" />
+				<exclude name="**/advQuery/sdkLogoSmall.gif" />
+				<exclude name="**/advQuery/sdkLogoSmall2.gif" />
+				<exclude name="**/advQuery/tagline.gif" />
+				<exclude name="**/advQuery/HomeImage.jpg" />
+				<exclude name="**/advQuery/favicon.ico" />
+				<exclude name="**/advQuery/appLogo.jpg" />
+				<exclude name="**/advQuery/specimen.jpg" />
+				<exclude name="**/advQuery/uIEnhancementImages/**" />
+			</fileset>
+		</copy>
+
+		<!--Copying pages -->
+		<copy todir="${dist.dir}/pages" overwrite="true">
+			<fileset dir="${base.dir}/src/web/pages">
+				<exclude name="QueryApplicationHeader.jsp" />
+				<exclude name="QueryApplicationHeaderLogin.jsp" />
+				<exclude name="QueryIndex.jsp" />
+				<exclude name="QueryMainFooter.jsp" />
+				<exclude name="QueryMainHeader.jsp" />
+				<exclude name="QueryMainHeaderLogin.jsp" />
+				<exclude name="**/mainMenu/HomeLogo.jsp" />
+				<exclude name="**/advQuery/content/home/Error.jsp" />
+				<exclude name="**/advQuery/content/common/RedirectToLoginPage.jsp" />
+				<exclude name="**/advQuery/content/search/ParticipantSearch.jsp" />
+				<exclude name="**/advQuery/content/search/SpecimenCollectionGroupSearch.jsp" />
+				<exclude name="**/advQuery/content/search/SpecimenSearch.jsp" />
+				<exclude name="**/advQuery/content/search/DistributionReport.jsp" />
+			</fileset>
+		</copy>
+
+		<!--Copying the flex related files from WEB-INF/flex -->
+		<copy todir="${dist.dir}/flex">
+			<fileset dir="${base.dir}/src/web/flex">
+				<include name="cache.dep" />
+				<include name="**/*.xml" />
+				<include name="**/*.properties" />
+			</fileset>
+		</copy>
+
+		<!-- Copying flex components-->
+		<copy todir="${dist.dir}/flexclient" overwrite="true">
+			<fileset dir="${base.dir}/src/web/flexclient" />
+		</copy>
+
+		<!--Added By Baljeet for meta data loading -->
+		<!--
+		<copy todir ="${zip.dir}/csv" overwrite="true">
+			<fileset dir="${base.dir}/src/conf/csv" />
+		</copy>
+
+		<copy todir ="${zip.dir}/xmi" overwrite="true">
+			<fileset dir="${base.dir}/xmi" />
+        </copy>
+        -->
+		<!--Baljeet's changes ends here -->
+		<copy todir="${dist.dir}/lib" overwrite="true">
+			<fileset file="${lib.dir}/ant-contrib.jar" />
+			<fileset file="${lib.dir}/mysql-connector-java-5.0.8-bin.jar" />
+			<fileset file="${lib.dir}/ojdbc14.jar" />
+			<fileset file="${lib.dir}/liquibase.jar" />
+			<!--<fileset file="${lib.dir}/dom4j-1.6.jar" />
+			<fileset file="${lib.dir}/lib/j2ee.jar" /> -->
+			<fileset file="${lib.dir}/log4j-1.2.9.jar" />
+		</copy>
+		<copy todir="${dist.dir}/db" overwrite="true">
+			<fileset dir="${base.dir}/db" />
+		</copy>
+		<!-- DE conf files -->
+		<copy todir="${dist.dir}/DE_conf" overwrite="true">
+			<fileset dir="${base.dir}/src/conf/DE_conf" />
+		</copy>
+		<!-- DE conf files end -->
+	</target>
+
+	<!-- flex related targets -->
+	<taskdef resource="flexTasks.tasks" classpath="${basedir}/src/lib/server/flexTasks.jar" />
+	<target name="compile_dag_flex">
+		<mxmlc file="${FLEX_APP_ROOT}/advQuery/dag/Dag.mxml" keep-generated-actionscript="true">
+			<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml" />
+			<source-path path-element="${FLEX_HOME}/frameworks" />
+		</mxmlc>
+	</target>
+
+	<!-- flex related target finish -->
+	<target name="dist" depends="create_zip">
+	</target>
+
+	<!-- Target create jar file added By Baljeet-->
+	<target name="build_jar" depends="compile">
+		<tstamp />
+		<delete file="${local.ivy.repo.dir}/AdvanceQuery.jar" />
+		<jar jarfile="${local.ivy.repo.dir}/AdvanceQuery.jar" basedir="${classes.dir}">
+			<manifest>
+				<section name="${aq.jar.details}">
+					<attribute name="Version" value="${aq.jar.version}" />
+					<attribute name="Built-By" value="${aq.jar.creator}" />
+					<attribute name="Built-At-Time" value="${TODAY} ${TSTAMP}" />
+					<attribute name="SVN-URL" value="${dist.revision}" />
+				</section>
+			</manifest>
+		</jar>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- Junit test cases & Cobertura code coverage report                                      -->
+	<!-- =================================================================== -->
+	<target name="test" depends="generate_codecoverage_report"/>
+	<target name="generate_codecoverage_report">
+		<antcall target="instrument" />
+		<antcall target="compile_junit_TestCases" />
+		<ant target="runJunitTestCases" />
+		<antcall target="coverage-report" />
+		<!--
+		<ant antfile="cobertura.xml" target="coverage.check"/>
+		-->
+	</target>
+
+	<target name="compile_junit_TestCases">
+		<echo>Compiling AQ test cases : </echo>
+		<javac destdir="${classes.dir}" includes="**/*.*" includeAntRuntime="false" debug="true">
+			<src path="${test.dir}" />
+			<classpath refid="app.classpath" />
+		</javac>
+	</target>
+
+	<path id="app.classpath">
+		<fileset dir="${lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="instrument" depends="init,compile">
+		<echo>Instrumenting the application classes : </echo>
+		<!--
+					Remove the coverage data file.
+		-->
+		<delete file="${cobertura.location}/cobertura.ser" />
+
+		<!--
+					Instrument the application classes, writing the
+					instrumented classes into ${build.instrumented.dir}.
+		-->
+		<cobertura-instrument todir="${test.instrumented.dir}" datafile="${cobertura.location}/cobertura.ser">
+
+		<classpath>
+			<fileset dir="${lib.dir}">
+				<include name="**/*.jar" />
+			</fileset>
+		</classpath>
+		<!--
+					The following line causes instrument to ignore any
+					source line containing a reference to log4j, for the
+					purposes of coverage reporting.
+		-->
+		<ignore regex="org.apache.log4j.*" />
+		<fileset dir="${classes.dir}">
+		<!--
+					Instrument all the application classes, but
+					don't instrument the test classes.
+		-->
+			<include name="**/*.class" />
+			<exclude name="**/action/*.class"/>
+			<exclude name="**/actionForm/*.class"/>
+			<exclude name="**/upgrade/*.class" />
+		</fileset>
+		</cobertura-instrument>
+	</target>
+
+	<target name="runJunitTestCases">
+		<mkdir dir="${junit.report.dir}" />
+		<echo message="Running junit test cases...." />
+		<copy file="${base.dir}/src/conf/query-properties/ApplicationSecurityConfig.xml" todir="${classes.dir}" overwrite="true" />
+		<antcall target="replacecfgfiles" />
+		<replace dir="${classes.dir}">
+			<include name="ApplicationSecurityConfig.xml" />
+			<replacefilter token="@@hibernate-config-file@@" value="${target.dir}/QueryHibernate.cfg.xml" />
+		</replace>
+		<replace dir="${classes.dir}">
+			<include name="ApplicationResources.properties" />
+			<replacefilter token="@@app.name@@" value="app.name" />
+		</replace>
+		<junit printsummary="yes" haltonerror="no" haltonfailure="no" fork="yes" maxmemory="1024m">
+			<formatter type="xml" />
+			<sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.location}/cobertura.ser" />
+
+			<classpath location="${test.instrumented.dir}" />
+			<classpath location="${classes.dir}" />
+
+			<classpath>
+				<fileset dir="${lib.dir}">
+					<exclude name="AdvanceQuery.jar" />
+					<exclude name="AdvanceQuery1.2.jar" />
+					<include name="*.jar" />
+				</fileset>
+			</classpath>
+
+			<classpath refid="cobertura.classpath" />
+
+			<batchtest todir="${junit.report.dir}">
+				<fileset dir="${test.dir}">
+					<include name="**/TestAll.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+
+		<junitreport todir="${junit.report.dir}">
+			<fileset dir="${junit.report.dir}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report todir="${junit.report.dir}" />
+		</junitreport>
+
+		<!--
+		<delete>
+			<fileset dir="${junit.report.dir}">
+				<include name="**/**/*.xml" />
+			</fileset>
+		</delete>
+		-->
+	</target>
+
+	<target name="replacecfgfiles">
+		<copy file="${base.dir}/src/conf/DE_conf/DynamicExtensionsHibernate.cfg.xml" todir="${classes.dir}" overwrite="true" />
+		<copy file="${base.dir}/src/conf/DE_conf/QueryHibernate.cfg.xml" todir="${classes.dir}" overwrite="true" />
+		<if>
+			<equals arg1="mysql" arg2="${database.type}" />
+			<then>
+				<replace dir="${classes.dir}">
+					<include name="*.cfg.xml" />
+					<replacefilter token="@@DIALECT@@" value="${mysql.dialect.string}" />
+					<replacefilter token="@@DRIVER@@" value="com.mysql.jdbc.Driver" />
+					<replacefilter token="@@URL@@" value="jdbc:mysql://${database.host}:${database.port}/${database.name}" />
+				</replace>
+			</then>
+			<elseif>
+				<equals arg1="oracle" arg2="${database.type}" />
+				<then>
+					<replace dir="${classes.dir}">
+						<include name="*.cfg.xml" />
+						<replacefilter token="@@DIALECT@@" value="org.hibernate.dialect.Oracle9Dialect" />
+						<replacefilter token="@@DRIVER@@" value="oracle.jdbc.driver.OracleDriver" />
+						<replacefilter token="@@URL@@" value="jdbc:oracle:thin:@${database.host}:${database.port}:${database.name}" />
+					</replace>
+					<replace dir="${classes.dir}">
+						<include name="ApplicationDAOProperties.xml" />
+						<replacefilter token="MySQLDAOProperties.xml" value="OracleDAOProperties.xml" />
+					</replace>
+				</then>
+			</elseif>
+		</if>
+		<replace dir="${classes.dir}">
+			<include name="*.cfg.xml" />
+			<replacefilter token="@@DATABASE_USERNAME@@" value="${database.username}" />
+			<replacefilter token="@@DATABASE_PASSWORD@@" value="${database.password}" />
+		</replace>
+	</target>
+
+	<target name="coverage-report">
+		<echo> Generating coverage reports :</echo>
+		<mkdir dir="${coverage.dir}/AQCodeCoverageXml" />
+		<mkdir dir="${coverage.dir}/AQCodeCoverageHtml" />
+
+		<!--
+				Generate an XML file containing the coverage data using
+				the "srcdir" attribute.
+		-->
+
+		<cobertura-report srcdir="${src.dir}" destdir="${coverage.dir}/AQCodeCoverageXml" datafile="${cobertura.location}/cobertura.ser" format="xml" />
+
+		<!--
+					Generate a series of HTML files containing the coverage
+					data in a user-readable form using nested source filesets.
+		-->
+		<cobertura-report destdir="${coverage.dir}/AQCodeCoverageHtml" datafile="${cobertura.location}/cobertura.ser">
+			<fileset dir="${src.dir}">
+				<include name="**/*.java" />
+				<exclude name="**/*Action.java" />
+				<exclude name="**/UpgradeSavedQueries.class" />
+			</fileset>
+		</cobertura-report>
+	</target>
+
+		<!--ivy:retrieve related tags start here-->
+			<property name="common.dir" location="${software.dir}/common" />
+
+			<property name="bda-utils.dir" location="${target.dir}/bda-utils" />
+			<property name="project.properties.file" value="${software.dir}/build/project.properties" />
+			<property file="${project.properties.file}" />
+			<import file="${bda-utils.dir}/bda-build-utils-${bda.version}.xml" />
+
+
+			<path id="bda-utils.classpath">
+				<fileset dir="${bda-utils.dir}">
+					<include name="**/*.jar" />
+				</fileset>
+			</path>
+			<path id="ivy.classpath">
+				<fileset dir="${target.dir}/lib">
+					<include name="ivy-2.0.0.jar" />
+				</fileset>
+			</path>
+
+			<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.classpath" />
+			<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask"  classpathref="bda-utils.classpath"/>
+			<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="bda-utils.classpath"/>
+
+			<property name="ivy.settings.file" location="${common.dir}/ivy/cbiit-ivy-settings.xml" />
+				<target name="ivy-settings">
+					<property name="ivy.dep.file" value="${common.dir}/bda-download/ivy-bda.xml"/>
+					<ivy:settings file="${ivy.settings.file}"/>
+				</target>
+			<target name="retrieve-ivy-files" depends="ivy-settings"  description="Updates the local ivy repository">
+				<ivy:resolve refresh="true" conf="app_lib"/>
+				<ivy:retrieve pattern="${lib.dir}/[artifact]-[revision].[ext]" conf="app_lib" />
+			<antcall target="retrieve-DE"></antcall>
+			<antcall target="retrieve-Qry"></antcall>
+			</target>
+			<target name="retrieve-DE" depends="ivy-settings"  description="Updates the local ivy repository">
+					<ivy:resolve refresh="true" conf="app_lib_DE"/>
+					<ivy:retrieve pattern="${lib.dir}/[artifact].[ext]" conf="app_lib_DE" />
+			</target>
+			<target name="retrieve-Qry" depends="ivy-settings"  description="Updates the local ivy repository">
+						<ivy:resolve refresh="true" conf="app_lib_Qry"/>
+						<ivy:retrieve pattern="${lib.dir}/[artifact].[ext]" conf="app_lib_Qry" />
+			</target>
+
+		<!--ivy:retrieve related tags end here-->
+</project>

@@ -1,0 +1,62 @@
+<?xml version = "1.0" ?>
+<CacheableObjects>
+	<Classes>
+		<Class name="edu.wustl.catissuecore.domain.Address"/>		
+		<Class name="edu.wustl.catissuecore.domain.CancerResearchGroup"/>
+		<Class name="edu.wustl.catissuecore.domain.Department"/>
+		<Class name="edu.wustl.catissuecore.domain.ExternalIdentifier"/>	
+		<Class name="edu.wustl.catissuecore.domain.Institution"/>	
+		<Class name="edu.wustl.catissuecore.domain.Participant"/>	
+		<Class name="edu.wustl.catissuecore.domain.ParticipantMedicalIdentifier"/>	
+		<Class name="edu.wustl.catissuecore.domain.ReportedProblem"/>
+		<Class name="edu.wustl.catissuecore.domain.SignUpUser"/>
+		<Class name="edu.wustl.catissuecore.domain.Site"/>	
+		<Class name="edu.wustl.catissuecore.domain.SpecimenProtocol"/>
+		<Class name="edu.wustl.catissuecore.domain.User"/>
+		<Class name="edu.wustl.catissuecore.action.annotations.LoadAnnotationDefinitionAction"/>	
+		<Class name="edu.wustl.catissuecore.action.CancerResearchGroupAction"/>
+		<Class name="edu.wustl.catissuecore.action.CPBasedSearchAction"/>
+		<Class name="edu.wustl.catissuecore.action.DepartmentAction"/>	
+		<Class name="edu.wustl.catissuecore.action.DomainObjectDetailsAction"/>	
+		<Class name="edu.wustl.catissuecore.action.DomainObjectListAction"/>
+		<Class name="edu.wustl.catissuecore.action.InstitutionAction"/>
+		<Class name="edu.wustl.catissuecore.action.ParticipantAction"/>	
+		<Class name="edu.wustl.catissuecore.action.querysuite.AddToLimitSetAction"/>
+		<Class name="edu.wustl.catissuecore.action.querysuite.GetDagViewDataAction"/>	
+		<Class name="edu.wustl.catissuecore.action.querysuite.PathFinderAction"/>
+		<Class name="edu.wustl.catissuecore.action.querysuite.ViewSearchResultsAction"/>	
+		<Class name="edu.wustl.catissuecore.action.SiteAction"/>
+		<Class name="edu.wustl.catissuecore.action.UserAction"/>	
+		<Class name="edu.wustl.common.action.SimpleQueryInterfaceAction"/>
+		<Class name="edu.wustl.common.action.SimpleQueryInterfaceAction_CancerResearchGroup"/>	
+		<Class name="edu.wustl.common.action.SimpleQueryInterfaceAction_Department"/>	
+		<Class name="edu.wustl.common.action.SimpleQueryInterfaceAction_Institution"/>
+		<Class name="edu.wustl.common.action.SimpleQueryInterfaceAction_Participant"/>	
+		<Class name="edu.wustl.common.action.SimpleQueryInterfaceAction_Site"/>	
+		<Class name="edu.wustl.common.action.SimpleQueryInterfaceAction_User"/>				
+		<Class name="edu.wustl.common.action.SimpleQueryInterfaceAction_ClinicalStudy"/>
+		<Class name="edu.wustl.common.action.SimpleQueryInterfaceAction_ClinicalStudyRegistration"/>
+		
+		<Class name="edu.wustl.catissuecore.domain.EventEntry"/>
+		<Class name="edu.wustl.catissuecore.domain.ClinicalStudyEvent"/>
+		<Class name="edu.wustl.catissuecore.domain.ClinicalStudyRegistration"/>	
+		<Class name="edu.wustl.catissuecore.domain.RecordEntry"/>
+		<Class name="edu.wustl.catissuecore.domain.StudyFormContext"/>
+		
+		<Class name="edu.wustl.catissuecore.action.ClinicalStudyAction"/>
+		<Class name="edu.wustl.catissuecore.action.ClinicalStudyRegistrationAction"/>
+		<Class name="edu.wustl.catissuecore.action.CSBasedSearchAction"/>
+		
+		<Class name="edu.wustl.clinportal.domain.Participant"/>
+
+			
+	</Classes>
+	
+	<Objects>
+		<ObjectType pattern="edu.wustl.catissuecore.domain.User*"/>
+		<ObjectType pattern="edu.wustl.catissuecore.domain.Site*"/>
+		<ObjectType pattern="edu.wustl.catissuecore.domain.ClinicalStudy*"/>
+		<ObjectType pattern="edu.wustl.catissuecore.domain.CollectionProtocol*"/>
+	</Objects>
+</CacheableObjects>
+

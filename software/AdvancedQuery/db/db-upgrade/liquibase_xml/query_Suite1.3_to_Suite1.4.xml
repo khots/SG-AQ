@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+
+	<property name="text.type" value="varchar" dbms="mysql" />
+	<property name="text.type" value="varchar2" dbms="oracle" />
+
+	<property name="boolean.type" value="bit(1)" dbms="mysql" />
+	<property name="boolean.type" value="number(1,0)" dbms="oracle" />
+
+	<property name="int.type" value="bigint(20)" dbms="mysql" />
+	<property name="int.type" value="number(19,0)" dbms="oracle" />
+
+	<property name="tinyint.type" value="tinyint(1)" dbms="mysql" />
+	<property name="tinyint.type" value="number(1,0)" dbms="oracle" />
+
+ 
+	<changeSet id="1" author="advancedQuery">
+		<!-- ALTER TABLE QUERY -->
+	 	<addColumn tableName="QUERY">
+			<column name="IS_NORMALIZED_VIEW" type="${boolean.type}" defaultValueBoolean="false" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="2" author="advancedQuery">
+		<!-- ALTER TABLE QUERY_PARAMAETERIZED_QUERY -->
+		<addColumn tableName="QUERY_PARAMETERIZED_QUERY">
+			<column name="SHOW_TREE" type="${tinyint.type}" defaultValue="1" />
+		</addColumn>		
+	</changeSet>
+</databaseChangeLog>         

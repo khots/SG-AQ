@@ -1,0 +1,121 @@
+<?xml version ="1.0"?>
+<!--Ant Script for create Build for caTissue Suite-->
+
+<project name="Query Installation" default="">
+
+	<!--define require dir and Properties -->
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<pathelement location="./src/lib/client/ant-contrib.jar" />
+		</classpath>
+	</taskdef>
+
+	<property file="queryMainTiles.properties" />
+	<property file="queryHibernateCfg.properties" />
+	<property file="queryInstall.properties" />
+
+	<property environment="env" />
+	<import file="build-properties.xml" />
+	<property name="base.dir" value="." />
+	<property name="lib.dir" value="${base.dir}/lib" />
+
+	<property name="dbupgrade.sql.dir" value="${base.dir}/db/db-upgrade" />
+	<property name="oracle.driver.string" value="oracle.jdbc.driver.OracleDriver" />
+	<property name="mysql.driver.string" value="org.gjt.mm.mysql.Driver" />
+
+	
+
+	<path id="liquibaseClasspath">
+		<fileset dir="${lib.dir}" includes="*.jar" />
+	</path>
+	
+	<taskdef resource="liquibasetasks.properties">
+		<classpath>
+			<pathelement location="${lib.dir}/liquibase.jar" />
+		</classpath>
+	</taskdef>
+
+	
+		<target name="aq_upgrade_db_from_1.3_to_1.4">
+			<if>
+				<equals arg1="mysql" arg2="${database.type}" />
+				<then>
+					
+					<antcall target="aq_upgrade_from_1.3_to_1.4" >
+						<param name="driver.string" value="${mysql.driver.string}"/>
+						<param name="db.url" value="jdbc:mysql://${database.host}:${database.port}/${database.name}"/>	
+					</antcall>
+
+				</then>
+				<elseif>
+					<equals arg1="oracle" arg2="${database.type}" />
+					<then>
+						<antcall target="aq_upgrade_from_1.3_to_1.4" >
+							<param name="driver.string" value="${oracle.driver.string}"/>
+							<param name="db.url" value="jdbc:oracle:thin:@${database.host}:${database.port}:${database.name}"/>
+						</antcall>
+					</then>
+				</elseif>
+
+				<else>
+					<echo message="DATABASE INITIALIZATION FAILED PLEASE CHECK DATABASE.TYPE PROPERTY" level="error" />
+				</else>
+			</if>
+
+		</target>
+	
+
+	<target name="aq_upgrade_from_1.3_to_1.4">
+		<echo message="Upgrading DataBase changes from Advanced Query 1.3 to 1.4" />
+		<updateDatabase changeLogFile="${dbupgrade.sql.dir}/liquibase_xml/query_Suite1.3_to_Suite1.4.xml" driver="${driver.string}" url="${db.url}" username="${database.username}" password="${database.password}" dropFirst="false" classpathref="liquibaseClasspath" />
+	</target>
+			
+			
+		<target name="aq_upgrade_db_from_1.2_to_1.3">
+			<if>
+				<equals arg1="mysql" arg2="${database.type}" />
+				<then>
+					<antcall target="upgrade_db_mysql_1.2_to_1.3" />
+
+				</then>
+				<elseif>
+					<equals arg1="oracle" arg2="${database.type}" />
+					<then>
+						<antcall target="upgrade_db_oracle_1.2_to_1.3" />
+					</then>
+				</elseif>
+
+				<else>
+					<echo message="DATABASE INITIALIZATION FAILED PLEASE CHECK DATABASE.TYPE PROPERTY" level="error" />
+				</else>
+			</if>
+
+		</target>
+
+		<target name="upgrade_db_mysql_1.2_to_1.3">
+			<echo message="Initializing MySQL Database for Advanced Query Application..." />
+			<sql driver="${mysql.driver.string}" url="jdbc:mysql://${database.host}:${database.port}/${database.name}" userid="${database.username}" password="${database.password}">
+				<transaction src="${dbupgrade.sql.dir}/MySql/query_Suite1.2_to_Suite1.3.sql" />
+				<transaction>commit;</transaction>
+				<classpath>
+					<fileset dir="${lib.dir}">
+						<include name="*.jar" />
+					</fileset>
+				</classpath>
+			</sql>
+		</target>
+
+		<!-- Oracle Database Creation-->
+		<target name="upgrade_db_oracle_1.2_to_1.3">
+			<echo message="Initializing Oracle Database for Advanced Query Application..." />
+			<sql driver="${oracle.driver.string}" url="jdbc:oracle:thin:@${database.host}:${database.port}:${database.name}" userid="${database.username}" password="${database.password}" rdbms="oracle">
+				<transaction src="${dbupgrade.sql.dir}/Oracle/query_Suite1.2_to_Suite1.3.sql" />
+				<transaction>commit;</transaction>
+				<classpath>
+					<fileset dir="${lib.dir}">
+						<include name="*.jar" />
+					</fileset>
+				</classpath>
+			</sql>
+		</target>
+</project>

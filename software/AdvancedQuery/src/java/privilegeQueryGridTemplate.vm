@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<rows>
+	#foreach( $query in $queryList )
+	<row id="$query.queryId">
+		<cell><![CDATA[<input name='objCheckbox' value='$query.queryId' type='checkbox'/>]]></cell>	
+		<cell>$query.queryId</cell>
+		<cell style='font-size:.7em;' title="Description : $query.queryDescription "> $query.queryName^javascript:executeQuery("$query.queryId");^_self</cell>
+		<cell>$query.rootEntityName</cell>
+		<cell>$query.executedOn</cell>
+		<cell>$query.ownerName </cell>
+		#if($queryPageOf == "myQueries")
+		<cell><![CDATA[<img src='images/advQuery/application_edit.png' onclick='editQuery("$query.queryId")'   height='90%' />&nbsp&nbsp&nbsp<img src='images/advQuery/execute-button-1.PNG' onclick='executeQuery("$query.queryId")'  height='90%' />&nbsp&nbsp&nbsp<img src='images/advQuery/cancel.png' onclick='deleteQueryPopup("$query.queryId")'    height='90%' />&nbsp&nbsp&nbsp<img src='images/advQuery/export.jpg' title='Export Query' onclick='exportQuery("$query.queryId")' height='90%' />]]> </cell>
+		#{else}
+		<cell><![CDATA[<img src='images/advQuery/application_edit.png' onclick='editQuery("$query.queryId")'   height='90%' />&nbsp&nbsp&nbsp<img src='images/advQuery/execute-button-1.PNG' onclick='executeQuery("$query.queryId")' height='90%' /> &nbsp&nbsp&nbsp<img src='images/advQuery/export.jpg' title='Export Query' onclick='exportQuery("$query.queryId")' height='90%' />]]> </cell>
+		#end
+	</row> 
+	#end
+</rows>

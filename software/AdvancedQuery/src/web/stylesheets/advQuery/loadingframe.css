@@ -1,0 +1,30 @@
+.VisibleFrame {
+  width:100%;
+  height:100%;
+  position: absolute;  /* Do Not Modify */
+  overflow: hidden;  /* Do Not Modify */
+  z-index: 100;  /* Do Not Modify */
+  left: 0px;  /* Do Not Modify */
+  top: 0px;  /* Do Not Modify */
+  background-color:#ffffff;
+  text-align: center;
+  text-decoration: blink;
+  font-weight: bold;
+  font-size: 12pt;
+  cursor: wait;
+  opacity: 0.8;
+  filter: alpha(opacity=80);  /* IE doesn't include opacity (CSS3) (Note: modify both together) */
+}
+
+.HiddenFrame {
+width:0;
+  height:0;
+  position: absolute;  /* Do Not Modify */
+  overflow: hidden;  /* Do Not Modify */
+  z-index: 100;  /* Do Not Modify */
+  left: 0px;  /* Do Not Modify */
+  top: 0px;  /* Do Not Modify */
+  opacity: 90;
+  filter: alpha(opacity=90);  /* IE doesn't include opacity (CSS3) (Note: modify both together) */
+}
+

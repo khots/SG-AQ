@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE struts-config
+PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+"http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+
+<struts-config>
+
+	<form-beans>
+		<!--Query-->
+		<form-bean name="categorySearchForm" type="edu.wustl.query.actionForm.CategorySearchForm"/>
+		 <form-bean name="queryAdvanceSearchForm" type="edu.wustl.query.actionForm.QueryAdvanceSearchForm"/>
+		<form-bean name="saveQueryForm" type="edu.wustl.query.actionForm.SaveQueryForm"/>
+		 <form-bean name="queryLoginForm" type="edu.wustl.query.actionForm.QueryLoginForm"></form-bean>
+
+	</form-beans>
+	
+	<action-mappings>
+		<action path="/QueryHome" type="edu.wustl.query.action.ForwardAction">
+			<forward name="success" path=".query.homePageDef" />
+		</action>
+
+		<action path="/QueryRedirectHome"
+					type="org.apache.struts.actions.ForwardAction"
+					parameter=".query.mainTitlePageDef" />
+
+		<action path="/QuerySearch"
+					type="edu.wustl.query.action.ForwardAction">
+					<forward name="success" path=".query.searchHomeDef" />
+		</action>
+
+		<action path="/QueryContactUs" type="edu.wustl.common.action.ApplicationFooterAction">
+            <forward name="success" path=".query.contactUsDef"/>
+            <forward name="failure" path=".query.errorPageDef"/>
+		</action>
+
+		<action path="/QueryAccessibility" type="edu.wustl.common.action.ApplicationFooterAction">
+            <forward name="success" path=".query.accessibilityDef"/>
+            <forward name="failure" path=".query.errorPageDef"/>
+		</action>
+
+		<action path="/QueryDisclaimer" type="edu.wustl.common.action.ApplicationFooterAction">
+            <forward name="success" path=".query.disclaimerDef"/>
+            <forward name="failure" path=".query.errorPageDef"/>
+		</action>
+
+		<action path="/QueryPrivacyNotice" type="edu.wustl.common.action.ApplicationFooterAction">
+            <forward name="success" path=".query.privacyNoticeDef"/>
+            <forward name="failure" path=".query.errorPageDef"/>
+		</action>
+
+        <action path="/QuerySummary" type="edu.wustl.query.action.SummaryAction" name="summaryForm">
+        	<forward name="success" path=".query.summaryHomeDef" />
+            <forward name="failure" path=".query.homePageDef" />
+		</action>
+
+        <action path="/QueryHelp" type="org.apache.struts.actions.ForwardAction"
+                    parameter=".query.helpHomeDef" />
+
+		<action path="/QueryLoggedInSummary" type="edu.wustl.query.action.SummaryAction">
+        	<forward name="success" path=".query.summaryLoggedInDef" />
+            <forward name="failure" path=".query.homePageDef" />
+		 </action>
+
+         <action path="/QueryLoggedInHelp"
+                    type="org.apache.struts.actions.ForwardAction"
+                    parameter=".query.helpLoggedInDef" />
+
+        <action path="/QueryRedirectToHelp"  type="edu.wustl.query.action.RedirectToHelpAction" >
+        	<forward name="success" path=".query.RedirectToHelp" />
+        </action>
+
+        <!--Suite-->
+
+
+	<!--Added by Deepti -define array end-->
+	<!-- Action code : Query Module Starts : 06/11/06 -->
+		<action path="/QueryWizard"
+			type="edu.wustl.query.action.QueryWizardAction"
+			name="categorySearchForm"
+			validate="false"
+			scope="request">
+			<forward name="success" path=".query.searchCategory"/>
+			<forward name="failure" path=".query.cacheErrorPageDef"/>
+
+		</action>
+		<action path="/SearchCategory"
+			type="edu.wustl.query.action.CategorySearchAction"
+			name="categorySearchForm"
+			validate="false"
+			scope="request">
+			<forward name="success" path=".query.searchCategory"/>
+		</action>
+		<action path="/ValidateQuery"
+			type="edu.wustl.query.action.ValidateQueryAction"
+			name="categorySearchForm"
+			validate="false"
+			scope="request">
+			<forward name="success" path=".query.searchCategory"/>
+		</action>
+		<action path="/LoadSaveQueryPage"
+            type="edu.wustl.query.action.LoadSaveQueryPageAction"
+            name="saveQueryForm"
+            validate="false"
+            scope="request">
+            <forward name="success" path=".query.saveQuery"/>
+        </action>
+        <action path="/SaveQueryAction"
+			type="edu.wustl.query.action.SaveQueryAction"
+			name="saveQueryForm"
+			validate="true"
+			input="/LoadSaveQueryPage.do"
+			scope="request">
+			<forward name="success" path="/ShowQueryDashboardAction.do?actions=save&amp;pageOf=allQueries"/>
+			<forward name="failure" path="/LoadSaveQueryPage.do?access=access"/>
+		</action>
+		<action path="/RetrieveQueryAction"
+			type="edu.wustl.query.action.RetrieveQueryAction"
+			name="saveQueryForm"
+			validate="false"
+			scope="request">
+			<forward name="success" path=".query.queryViewPageDef"/>
+			<forward name="failure" path=".query.errorPageDef"/>
+			<forward name="cacheError" path=".query.cacheErrorPageDef"/>
+		</action>
+
+		<action path="/ShowQueryDashboardAction"
+			type="edu.wustl.query.action.ShowQueryDashboardAction"
+			name="saveQueryForm"
+			validate="false"
+			scope="request">
+			<forward name="success" path=".query.queryViewPageDef"/>
+			<forward name="failure" path=".query.errorPageDef"/>
+			<forward name="cacheError" path=".query.cacheErrorPageDef"/>
+		</action>
+
+		<action path="/EditQueryAction"
+			type="edu.wustl.query.action.EditQueryAction"
+			name="saveQueryForm"
+			validate="false"
+			scope="request">
+			<forward name="success" path="/SearchCategory.do?currentPage=resultsView&amp;isQuery=true"/>
+		</action>
+		<action path="/ExecuteQueryAction"
+			type="edu.wustl.query.action.ExecuteQueryAction"
+			name="saveQueryForm"
+			validate="false"
+			scope="request">
+			<forward name="success" path=".query.queryResultsSpreadsheetViewDef"/>
+			<forward name="failure" path="/ShowQueryDashboardAction.do?access=access"/>
+			<forward name="InvalidValues" path="/FetchQuery.do"/>
+		</action>
+		<action path="/DeleteQuery"
+			type="edu.wustl.query.action.DeleteQueryAction"
+			validate="false"
+			scope="request">
+			<forward name="success" path="/ShowQueryDashboardAction.do?action=delete"/>
+			<forward name="failure" path="/ShowQueryDashboardAction.do?access=access"/>
+		</action>
+		<action path="/FetchQuery"
+			type="edu.wustl.query.action.FetchQueryAction"
+			name="saveQueryForm"
+			validate="false"
+			scope="request">
+			<forward name="success" path=".query.collectQueryParameter"/>
+			<forward name="failure" path="/ShowQueryDashboardAction.do?access=access"/>
+			<forward name="executeQuery" path="/ExecuteQueryAction.do"/>
+		</action>
+		<action path="/loadDefineSearchRules"
+			type="edu.wustl.query.action.LoadDefineSearchRulesAction"
+			name="categorySearchForm"
+			validate="false"
+			scope="request">
+			<forward name="success" path=".query.searchCategory"/>
+		</action>
+		<action path="/ViewSearchResultsJSPAction"
+			type="edu.wustl.query.action.ViewSearchResultsJSPAction"
+			name="categorySearchForm"
+			validate="false"
+			scope="request">
+			<forward name="success" path=".query.queryResultsSpreadsheetViewDef"/>
+			<forward name="failure" path=".query.errorPageDef"/>
+
+		</action>
+		<action path="/DefineSearchResultsView"
+			type="edu.wustl.query.action.DefineSearchResultsViewAction"
+			name="categorySearchForm"
+			validate="false"
+			scope="request">
+			<forward name="success" path=".query.defineSearchResultsView"/>
+			<forward name="BuildNewTree" path=".query.defineSearchResultsViewBNT"/>
+		</action>
+
+		<action path="/BuildCustomizeTree"
+			type="edu.wustl.query.action.querysuite.BuildCustomizeTreeAction"
+			name="categorySearchForm"
+			validate="false"
+			scope="request">
+			<forward name="success" path=".query.defineSearchResultsViewBNT"/>
+		</action>
+				
+		<action path="/QueryGridFilter"
+			type="edu.wustl.query.action.QueryGridFilterAction" 
+			name="categorySearchForm"
+			validate="false"
+			scope="request" />
+			
+		<action path="/BuildQueryOutputSpreadsheet"
+			type="edu.wustl.query.action.querysuite.BuildQueryOutputSpreadsheetAction"
+			name="categorySearchForm"
+			validate="false"
+			scope="request">
+			<forward name="success" path=".query.defineSearchResultsViewBNT"/>
+		</action>
+		<action path="/DefineQueryResultsView"
+			type="edu.wustl.query.action.DefineQueryResultsViewAction"
+			name="categorySearchForm"
+			validate="false"
+			scope="request">
+			<forward name="success" path=".query.defineQueryResultsView"/>
+		</action>
+
+		<action path="/ConfigureGridView"
+			type="edu.wustl.query.action.ConfigureGridViewAction"
+			name="categorySearchForm"
+			validate="false"
+			scope="request">
+			<forward name="success" path=".query.queryResultsSpreadsheetViewDef"/>
+		</action>
+	
+		<action path="/QueryMessageAction"
+			type="edu.wustl.query.action.QueryMessageAction"
+			name="categorySearchForm"
+			validate="false"
+			scope="request">
+			<forward name="success" path=".query.searchCategory"/>
+		</action>
+
+		
+		<!-- Action code : Query Module changes for pagination starts : 20/07/2007 -->
+		
+		<action path="/QueryGridView"
+			type="edu.wustl.query.action.QueryGridViewAction">
+			<forward name="success" path=".query.queryResultsSpreadsheetViewDef" />
+		</action>
+		<!-- Action code : Query Module changes for pagination ends : 20/07/2007 -->
+
+		<!-- Action code : Query Module Ends : 06/11/06 -->
+
+	   <!--Added By Baljeet As a Default Action for Query -->
+	   <action path="/QueryAction"
+          type = "edu.wustl.query.action.QueryAction">
+            <forward name="success"  path="/ShowQueryDashboardAction.do" />
+        </action>
+
+	   	<!-- Added for Login -->
+	   	 <action path="/QueryLogin"
+			type="edu.wustl.query.action.QueryLoginAction"
+			name="queryLoginForm"
+			validate="true"
+			input=".query.mainTitlePageDef"
+			scope="request">
+			<forward name="success" path="/QueryWizard.do?access=access" />
+			<forward name="failure" path=".query.homePageDef" />
+		</action>
+
+		<action path="/QueryLogout"
+			type="edu.wustl.query.action.QueryLogoutAction">
+			<forward name="success" path="/QueryHome.do" />
+		</action>
+
+		<!-- Added for export -->
+		<action path="/SpreadsheetExport"
+			type="edu.wustl.query.action.SpreadsheetExportAction"
+			name="queryAdvanceSearchForm"
+			validate="false"
+			scope="request">
+		</action>
+
+		
+		<action path="/SAASPgmExportAction"
+			type="edu.wustl.query.action.SAASPgmExportAction"
+			name="queryAdvanceSearchForm"
+			validate="false"
+			scope="request">
+		</action>		
+		
+
+		<action path="/ShareQueryAjax"
+			type="edu.wustl.query.action.ShareQueryAjaxAction"
+			name="clinicalStudyForm"
+			validate="false"
+			scope="request">
+			<forward name="success" path="/ShareQueryAjax.do" />
+		</action>
+       
+ 		<action path="/ShowParamQueryAttributes"
+        	type="edu.wustl.query.action.ShowParamQueryAttributesAction"
+            validate="false"
+			scope="request" >
+        </action>
+		<!-- Actions for Query Folder -->
+  	 	<action path="/TagGridInItAction" type="edu.wustl.query.action.TagGridInItAction"
+			validate="false" scope="session" />
+		<action path="/TagDeleteAction"
+			type="edu.wustl.common.tags.action.TagDeleteAction" validate="false"
+			scope="session" />
+		<action path="/TagItemDeleteAction"
+			type="edu.wustl.common.tags.action.TagItemDeleteAction" validate="false"
+			scope="session" />
+		<action path="/GetTreeGridChildAction" type="edu.wustl.common.tags.action.GetTreeGridChildAction"
+			validate="false" scope="session" />
+		<action path="/AssignTagAction"
+			type="edu.wustl.common.tags.action.AssignTagAction" validate="false"
+			name="saveQueryForm" input=".query.queryViewPageDef" />
+		<action path="/TreeGridInItAction"
+			type="edu.wustl.common.tags.action.TreeGridInItAction" validate="false"
+			scope="session" /> 
+		<action path="/QueryGridInitAction"
+			type="edu.wustl.query.action.QueryGridInitAction" validate="false"
+			scope="session" />
+		<action path="/ShareTagAction"
+			type="edu.wustl.common.tags.action.ShareTagAction" validate="false"
+			scope="session" />
+	
+		<action path="/ExportQueryAction"
+			type="edu.wustl.query.action.ExportQueryAction" validate="false"
+			scope="session" />
+	</action-mappings>
+
+	<controller processorClass="edu.wustl.common.struts.ApplicationRequestProcessor" />
+
+	<message-resources parameter="ApplicationResources" />
+
+	<plug-in className="org.apache.struts.tiles.TilesPlugin" >
+		<set-property property="definitions-config"
+		value="/WEB-INF/AdvanceQuery-tiles-defs.xml" />
+		<set-property property="moduleAware" value="true" />
+		<set-property property="definitions-parser-validate" value="true" />
+	</plug-in>
+</struts-config>

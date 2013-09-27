@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="700" height="285"
+	showCloseButton="true" borderColor="#785303" backgroundColor="white"
+	left="0" right="0" close="removeMe();" borderThicknessLeft="2" borderThicknessRight="2" borderThicknessBottom="2"
+	borderThicknessTop="5" title="Join" color="#785303">
+
+	<mx:Script>
+	 	<![CDATA[
+
+	 	import mx.rpc.events.ResultEvent;
+ 		import mx.containers.HBox;
+ 		import mx.controls.ComboBox;
+ 		import mx.controls.CheckBox;
+ 		import mx.controls.Alert;
+	 	import mx.managers.PopUpManager;
+	 	import mx.collections.ArrayCollection;
+
+		[Bindable]
+		public var leftDropDown: ArrayCollection;
+
+        [Bindable]
+	 	public var rightDropDown: ArrayCollection;
+
+	 	[Bindable]
+		public var firstEntityLabel: String = new String();
+
+		[Bindable]
+		public var secondEntityLabel: String = new String();
+
+		[Bindable]
+		public var counter: int = 0;
+
+		[Bindable]
+		public var attributes: int = 0;
+
+		[Bindable]
+		public var hbox: HBox = null;
+
+		[Bindable]
+		public var vbox: VBox = null;
+
+		[Bindable]
+		public var vbox1: VBox = null;
+
+		[Bindable]
+		public var vbox2: VBox = null;
+
+		[Bindable]
+		public var checkBox: CheckBox = null;
+
+		[Bindable]
+		public var comboBox1: ComboBox = null;
+
+		[Bindable]
+		public var comboBox2: ComboBox = null;
+
+		[Bindable]
+		public var firstNodeDp: Object;
+
+ 	    [Bindable]
+ 	    public var secondNodeDp: Object;
+
+ 	    [Bindable]
+ 	    public  var firstEntityExpId: int = 0;
+
+     	[Bindable]
+     	public var secondEntityExpId: int = 0;
+
+		[Bindable]
+     	public var firstEntityName: String = null;
+
+     	[Bindable]
+     	public var secondEntityName: String = null;
+
+     	[Bindable]
+		public var nodeName: String = null;
+
+		[Bindable]
+	 	public var buttonLabel: String = "OK";
+
+ 	    private var firstNodeList: ArrayCollection = null;
+		private var secondNodeList: ArrayCollection = null;
+
+		/**
+		 * Remove the Join Query PopUp window.
+		 */
+		public function removeMe():void
+		{
+	     	PopUpManager.removePopUp(this);
+	        this.parentApplication.operationforView=""; //to overcome from edit mode
+		}
+
+		/**
+		 * This method adds a new attribute on UI. It creates a nw HBOX having 3 VBOX which has 1 checkbox and
+		 * 2 combo boxes. All these components are added in HBOX having id ad "addAttributeId".
+		 */
+		public function addAttribute(): void
+		{
+
+			//counter incremented.
+			counter++;
+			//Alert.show(counter + " counter");
+			//attribute incremented to keep a check for displaying the Delete Button and Delete All checkbox
+			attributes++;
+
+			//Check added to hide/un-hide delete buttons on UI.
+			if(attributes == 1)
+			{
+				//make the delete button and delete all checkbox visible.
+				deleteButton.visible = true;
+				deleteAllChkBox.visible = true;
+				deleteAllChkBox.selected = false;
+				deleteAllLabel.visible = true;
+				submitButton.enabled = true;
+			}
+
+			//new Hbox added for each attribute when user selects add attribute button.
+			var hbox: HBox = new HBox();
+			hbox.id = "hbox_" + counter;
+			hbox.name = "hbox_" + counter;
+			hbox.height = 25;
+			//hbox added to Vbox with id = "addAttributeId".
+			addAttributeId.addChild(hbox);
+
+			//first VBox added in Hbox
+			var vboxForCheckbox: VBox = new VBox();
+			vboxForCheckbox.id = "vboxForCheckBox_" + counter;
+			vboxForCheckbox.name = "vboxForCheckBox_" + counter;
+			vboxForCheckbox.width = 30;
+			hbox.addChild(vboxForCheckbox);
+
+			//second VBox added in Hbox
+			var vboxForFirstDropDown: VBox = new VBox();
+			vboxForFirstDropDown.id = "vboxForFirstDropDown_" + counter;
+			vboxForFirstDropDown.name = "vboxForFirstDropDown_" + counter;
+			vboxForFirstDropDown.width = 262;
+			hbox.addChild(vboxForFirstDropDown);
+
+			//third VBox added in Hbox
+			var vboxForSecondDropDown: VBox = new VBox();
+			vboxForSecondDropDown.id = "vboxForSecondDropDown_" + counter;
+			vboxForSecondDropDown.name = "vboxForSecondDropDown_" + counter;
+			vboxForSecondDropDown.width = 190;
+			hbox.addChild(vboxForSecondDropDown);
+
+			//checkbox added in first VBox
+			var checkBox: CheckBox = new CheckBox();
+			//checkBox = new CheckBox();
+			checkBox.id = "checkBox_"+counter;
+			checkBox.name = "checkBox_"+counter;
+			if(deleteAllChkBox.selected == true)
+			{
+				checkBox.selected = true;
+				checkBox.enabled = false;
+			}
+			vboxForCheckbox.addChild(checkBox);
+
+			//combo box added in second VBox
+			//Alert.show(leftDropDown + "");
+			var comboxBox1: ComboBox = new ComboBox();
+			comboxBox1.id = "comboxBox1_" + counter;
+			comboxBox1.name = "comboxBox1_" + counter;
+			comboxBox1.dataProvider = leftDropDown;
+			comboxBox1.width = 180;
+			comboxBox1.prompt = "--Select--";
+			comboxBox1.selectedItem =
+			comboxBox1.rowCount = 7;
+			//comboxBox1.toolTip = "{comboxBox1.selectedItem}";
+			vboxForFirstDropDown.addChild(comboxBox1);
+
+			//combo box added in third VBox
+			//Alert.show(rightDropDown + "");
+			var comboxBox2: ComboBox = new ComboBox();
+			comboxBox2.id = "comboxBox2_" + counter;
+			comboxBox2.name = "comboxBox2_" + counter;
+			comboxBox2.dataProvider = rightDropDown;
+			comboxBox2.width = 180;
+			comboxBox2.prompt = "--Select--";
+			comboxBox2.selectedItem =
+			comboxBox2.rowCount = 7;
+			//comboxBox2.toolTip = "{comboxBox2.selectedItem}";
+			vboxForSecondDropDown.addChild(comboxBox2);
+		}
+
+		/**
+		 * This methods is called when user selects/de-deseletcs the delete all checkbox.
+		 */
+		public function selectAll(): void
+		{
+			//if delete all checkbox selected.
+			if(deleteAllChkBox.selected == true)
+			{
+				allAttributesCheckBoxes(true, false);
+
+			}
+			//if delete all checkbox un-selected.
+			else if(deleteAllChkBox.selected == false)
+			{
+				allAttributesCheckBoxes(false, false);
+				checkBox.selected = false;
+			}
+		}
+
+		/**
+		 * This method traverses all the HBox on the Join Query Pop panel and selects the appropriate checkbox.
+		 */
+		private function allAttributesCheckBoxes(checkForAll: Boolean, checkForOne: Boolean): void
+		{
+			for(var count:int = 1; count <= counter; count++)
+			{
+				if(addAttributeId.getChildByName("hbox_"+count) != null)
+				{
+					//Get the hbox from the parent component
+					hbox = addAttributeId.getChildByName("hbox_"+count) as HBox;
+					//Get the Vbox of the checkboxes column from Hbox
+					vbox = hbox.getChildByName("vboxForCheckBox_"+count) as VBox;
+					checkBox = vbox.getChildByName("checkBox_"+count) as CheckBox;
+					//checkForOne set to TRUE when a particular checkbox is seleted.
+					if(checkForOne == true)
+					{
+						//checkBox is TRUE when DELETE ALL checkbox is seleted.
+						if(checkBox.selected == true)
+						{
+							addAttributeId.removeChild(hbox);
+							continue;
+						}
+						else
+						{
+							continue;
+						}
+					}
+					//select all Checbox, if DELETE ALL checkbox seleted
+					if(checkForAll == true)
+					{
+						checkBox.selected = true;
+						checkBox.enabled = false;
+					}
+					//de-delect all Checbox, if DELETE ALL checkbox un-selected
+					else if(checkForAll == false)
+					{
+						checkBox.selected = false;
+						checkBox.enabled = true;
+					}
+				}
+			}
+		}
+
+		/**
+		 * This method is invoked when user selets the DELETE button.
+		 */
+		public function selectDelete(): void
+		{
+			//if DELETE ALL checbox is cliecked, remove all the attributes from the join query window.
+			//Set the DELETE and DELETE ALL button to visible mode and also set counter to value 0
+			if(deleteAllChkBox.selected == true)
+			{
+				addAttributeId.removeAllChildren();
+				deleteButton.visible = false;
+				deleteAllChkBox.visible = false;
+				deleteAllLabel.visible = false;
+				counter = 0;
+				attributes = 0;
+				submitButton.enabled = false;
+			}
+			else
+			{
+				//delete the particular HBox from the window whose checkbox is seleted.
+				allAttributesCheckBoxes(null, true);
+			}
+		}
+
+		/**
+		 * This method is called when OK button is pressed.
+		 */
+		public function submit(): void
+		{
+			//Alert.show("addAttributeId.ge");
+			//JoinQueryNode object instantiated which is populated and send at backend of Query
+			var joinQueryNode: JoinQueryNode = new JoinQueryNode();
+			var joinQueryNodeList: ArrayCollection = new ArrayCollection();
+			var populateJoinQueryOnce: Boolean = true;
+			var isValid: Boolean = true;
+
+			//Checks added to verify if any attribute is seleted on JOin Query Window.
+			//Alert.show("addAttributeId.getChildren(): " + addAttributeId.getChildren());
+			if(addAttributeId.getChildren() != null)
+			{
+				//Alert.show("1");
+				//Alert.show("counter : " + counter);
+				for(var count:int = 1; count <= counter; count++)
+				{
+					//Alert.show("2");
+					//Alert.show("addAttributeId.getChildByName(hbox_count)" + addAttributeId.getChildByName("hbox_"+count));
+					if(addAttributeId.getChildByName("hbox_" + count) != null)
+					{
+						//Alert.show("hbox : " + hbox);
+						hbox = addAttributeId.getChildByName("hbox_" + count) as HBox;
+						if(hbox != null)
+						{
+							//Alert.show("3");
+							vbox1 = hbox.getChildByName("vboxForFirstDropDown_" + count) as VBox;
+							vbox2 = hbox.getChildByName("vboxForSecondDropDown_" + count) as VBox;
+
+							comboBox1 = vbox1.getChildByName("comboxBox1_" + count) as ComboBox;
+							comboBox2 = vbox2.getChildByName("comboxBox2_" + count) as ComboBox;
+							//Alert.show(" comboBox1, comboBox2 " + comboBox1 + comboBox2);
+							if((comboBox1 != null && comboBox2 != null)
+							&& (comboBox1.selectedItem != null && comboBox2.selectedItem != null))
+							{
+								//Alert.show("4");
+								//Getting left and right entities property list containing <attributeId , attributeTyep>
+           	 					firstNodeList = firstNodeDp[comboBox1.selectedItem.toString()];
+           	 					secondNodeList = secondNodeDp[comboBox2.selectedItem.toString()];
+
+           	 					//validation - same datatype necessary to query
+           	 					//Alert.show("first node datatype "+firstNodeList.getItemAt(1).toString());
+           	 					//Alert.show("2nd node datatype "+secondNodeList.getItemAt(1).toString()); 
+           	 					if((firstNodeList.getItemAt(1).toString() == secondNodeList.getItemAt(1).toString()) || ("String" == firstNodeList.getItemAt(1).toString() || "String" == secondNodeList.getItemAt(1).toString()))
+           	 					{
+           	 						//Alert.show("condition added");
+									//JoinFormulaNode instantiated which is set in JoinQueryNode object in List
+									var joinFormulaNode: JoinFormulaNode = new JoinFormulaNode();
+
+	           	 					joinFormulaNode.setFirstAttributeDataType(String(firstNodeList.getItemAt(1)));
+	           	 					joinFormulaNode.setSecondAttributeDataType(String(secondNodeList.getItemAt(1)));
+
+	           	 					//Getting Id's of Attributes
+	           	 					joinFormulaNode.setFirstAttributeId(String(firstNodeList.getItemAt(0)));
+	             					joinFormulaNode.setSecondAttributeId(String(secondNodeList.getItemAt(0)));
+
+	             					//Getting the left and right operands
+	             					joinFormulaNode.setFirstAttributeName(String(firstNodeList.getItemAt(2)));
+						            joinFormulaNode.setSecondAttributeName(String(secondNodeList.getItemAt(2)));
+						            //isValid = true;
+						            if(populateJoinQueryOnce == true)
+									{
+										//Setting the first selected DAG Nodes Properties
+							            joinQueryNode.setFirstNodeEntityName(firstEntityName);
+										joinQueryNode.setFirstNodeExpressionId(firstEntityExpId);
+
+										//Setting the second selected DAG Nodes Properties
+							            joinQueryNode.setSecondNodeEntityName(secondEntityName);
+										joinQueryNode.setSecondNodeExpressionId(secondEntityExpId);
+
+
+										//Setting the node view
+										joinQueryNode.setNodeView(this.parentApplication.view);
+										//Alert.show("while setting value " + joinQueryNode.getNodeView());
+
+										//boolean value to change so joinQueryNode is populated just once
+										populateJoinQueryOnce = false;
+										joinQueryNode.name = nodeName;
+										//Alert.show("5 joinQueryNode.name " + joinQueryNode.name)
+									}
+
+									joinFormulaNode.name = parentApplication.createJoinFormulaNodeName(joinQueryNode.name, count);
+									//Alert.show("6's joinFormulaNode.name " + joinFormulaNode.name)
+									//added to collection of joinQueryNodeList
+						            joinQueryNodeList.addItem(joinFormulaNode);
+           	 					}
+           	 					else
+           	 					{
+           	 						Alert.show("Datatype of selected attributes do not match, Either one of the attribute should be String.");
+           	 						isValid = false;
+           	 						break;
+           	 					}
+							}
+							else
+							{
+								Alert.show("Please select a value from the Drop Down");
+								isValid = false;
+								break;
+							}
+						}
+						else
+						{
+							//Alert.show("@@@@");
+							//isValid = false;
+						}
+					}
+					else
+					{
+						//isValid = false;
+						//Alert.show("select something");
+					}
+				}//for ends
+
+				if(isValid == true)
+				{
+					//collection added to joinQueryNode object
+					joinQueryNode.setJoinFormulaNodeList(joinQueryNodeList);
+					//add JQ node on UI
+
+					//parentApplication.addJoinQueryNode(joinQueryNode);
+					if(submitButton.label == "OK")
+					{
+						joinQueryNode.setOperation("create");
+						this.parentApplication.rpcService.addEventListener(ResultEvent.RESULT, joinQueryNodeHandler);
+						this.parentApplication.rpcService.formJoinQuery(joinQueryNode, "add");
+					}
+					else
+					{
+						joinQueryNode.setOperation("edit");
+						this.parentApplication.rpcService.addEventListener(ResultEvent.RESULT, joinQueryNodeHandler);
+						this.parentApplication.rpcService.formJoinQuery(joinQueryNode, "edit");
+					}
+				}
+			}
+			else
+			{
+				Alert.show("Please select atleast a pair of attributes for Join Query");
+			}
+		}
+
+		private function joinQueryNodeHandler(event: ResultEvent): void
+		{
+			//Alert.show("in joinQueryNodeHandler method()");
+			var joinQueryNode: JoinQueryNode = event.result as JoinQueryNode;
+			this.parentApplication.rpcService.removeEventListener(ResultEvent.RESULT, joinQueryNodeHandler);
+			parentApplication.addJoinQueryNode(joinQueryNode);
+		}
+
+		]]>
+	 </mx:Script>
+	<mx:HBox x="10" y="10" width="676" height="228" backgroundColor="#FFFFFF">
+		<mx:VBox width="675" height="228" backgroundColor="#F9F6E3">
+			<mx:HBox width="100%" height="1%">
+			</mx:HBox>
+			<mx:HBox width="100%" height="14%">
+				<mx:VBox width="7%" height="100%">
+				</mx:VBox>
+				<mx:VBox width="40%" height="100%">
+					<mx:HBox width="100%" height="100%" backgroundColor="#FFFFFF" borderColor="#ABA6A6"
+						borderThickness="1" borderStyle="outset" maxWidth="260">
+						<mx:Label name="ClassName1" id="ClassName1" text="Name:" textAlign="left"
+							height="100%" fontStyle="normal" fontWeight="normal"
+							color="black" paddingTop="2" truncateToFit="true"/>
+						<mx:Label name="firstEntityLabel1" id="entityLabel1" text="{firstEntityLabel}"
+							textAlign="left" height="100%" fontStyle="normal" fontWeight="bold"
+							color="black" toolTip="{firstEntityLabel}" paddingTop="2"
+							truncateToFit="true" maxWidth="200"/>
+					</mx:HBox>
+				</mx:VBox>
+				<mx:VBox width="40%" height="100%">
+					<mx:HBox width="100%" height="100%" backgroundColor="#FFFFFF" borderColor="#ABA6A6"
+						borderThickness="1" borderStyle="outset" maxWidth="260">
+						<mx:Label name="ClassName2" id="ClassName2" text="Name:" textAlign="left"
+							height="100%" fontStyle="normal" fontWeight="normal"
+							color="black" paddingTop="2" truncateToFit="true"/>
+						<mx:Label name="secondEntityLabel1" id="entityLabel2" text="{secondEntityLabel}"
+							textAlign="left" height="100%" fontStyle="normal" fontWeight="bold"
+							color="black" toolTip="{secondEntityLabel}" paddingTop="2"
+							truncateToFit="true" maxWidth="200"/>
+					</mx:HBox>
+				</mx:VBox>
+				<mx:VBox width="13%" height="100%">
+				</mx:VBox>
+			</mx:HBox>
+			<mx:HBox width="100%" height="25%" backgroundColor="#F9E886">
+				<mx:VBox width="7%" height="100%">
+					<mx:CheckBox id="deleteAllChkBox" name="deleteAll" toolTip="Select All"
+						click="selectAll();" visible="false" paddingLeft="15" paddingTop="6">
+					</mx:CheckBox>
+				</mx:VBox>
+				<mx:VBox width="57%" height="100%" paddingTop="5">
+					<mx:Label name="deleteAllLabel" id="deleteAllLabel" text="Delete All"
+							textAlign="left" fontStyle="normal" fontWeight="normal"
+							buttonMode="true" color="black" visible="false"/>
+				</mx:VBox>
+				<mx:VBox width="15%" height="100%" paddingTop="2">
+					<mx:Button id="deleteButton" name="deleteButton" label="Delete"
+						visible="false" textAlign="center" fontStyle="normal" fontWeight="bold"
+						buttonMode="true" color="black" toolTip="Delete" click="selectDelete();" width="87"/>
+				</mx:VBox>
+				<mx:VBox width="20%" height="100%" x="0" paddingLeft="10" paddingTop="2">
+					<mx:Button id="addAttributeBtn" label="Add Attribute" x="15" y="15" textAlign="center" fontStyle="normal"
+					fontWeight="bold" buttonMode="true" color="black" toolTip="Add Atrribute"
+					click="addAttribute();"/>
+				</mx:VBox>
+			</mx:HBox>
+			<mx:HBox width="100%" height="121" verticalScrollPolicy="auto" backgroundColor="#F9F6E3"
+				paddingTop="2">
+				<mx:VBox id="addAttributeId" width="100%" height="100%" paddingLeft="15">
+				</mx:VBox>
+			</mx:HBox>
+			<mx:HBox width="100%" height="8%" backgroundColor="#FFFFFF" paddingTop="8">
+				<mx:Button id="submitButton" label="{buttonLabel}" x="15" textAlign="center"
+					fontStyle="normal" fontWeight="bold" click="submit();" buttonMode="true"
+					color="black" toolTip="{buttonLabel}" enabled="false" width="66"
+					fillColors="[#f9e886, #f9e886]" />
+				<mx:Button label="Cancel"  id="cancelButton" x="15" textAlign="center" fontStyle="normal"
+					fontWeight="bold" buttonMode="true" color="black" letterSpacing="0"
+					mouseFocusEnabled="true" toolTip="Cancel" width="66" click="removeMe();"
+					fillColors="[#f9e886, #f9e886]" />
+			</mx:HBox>
+		</mx:VBox>
+	</mx:HBox>
+
+</mx:TitleWindow>

@@ -1,0 +1,169 @@
+<?xml version ="1.0"?>
+<project name="Query DB Integration">
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<pathelement location="./lib/ant-contrib.jar" />
+		</classpath>
+	</taskdef>
+
+	<!--define require dir and Properties -->
+	<property name="base.dir" value="." />
+	<loadproperties srcFile="../../caTissueInstall.properties" />
+	<property file="../../caTissueInstall.properties" />
+	 
+	<target name="upgrade_to_plus_30">
+		<if>
+			<equals arg1="${patch_aq_plus_30}" arg2="true" /> 
+			<then>
+				<echo message="upgrading files for AQ plus3.0 Application ...." />
+			   	<antcall target="upgrade_aq_from_nciv1.2_to_plusv3.0"/>
+			</then>
+		</if>
+	</target>
+	<target name="upgrade_aq_from_nciv1.2_to_plusv3.0">
+		 
+		<copy todir="${deploy.temp.dir}/${war.dir}/WEB-INF/lib" overwrite="true">
+			<fileset dir="${deploy.temp.dir}/AdvanceQuery/patch/3.0/lib">
+				<include name="query.jar"/>
+				<include name="DAO-1.1.9.5.jar"/>
+				<include name="mail.jar"/>
+				<include name="velocity-dep-1.5.jar"/>
+				<include name="scrubber-runtime.jar"/>
+				<include name="xstream-1.4.4.jar"/>
+				<include name="xstream-hibernate-1.4.4.jar"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${deploy.temp.dir}/${war.dir}/dhtmlx_suite" overwrite="true">
+			<fileset dir="${deploy.temp.dir}/AdvanceQuery/dhtmlx_suite">
+				<include name="**/*"/>				 
+			</fileset>
+		</copy>
+		
+		<copy todir="${deploy.temp.dir}/${war.dir}/css" overwrite="true">
+			<fileset dir="${deploy.temp.dir}/AdvanceQuery/patch/3.0/css">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+	
+		<copy todir="${deploy.temp.dir}/catissuecore-properties" overwrite="true">
+			<fileset dir="${deploy.temp.dir}/AdvanceQuery/patch/3.0/properties">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${deploy.temp.dir}/${war.dir}/jss" overwrite="true">
+			<fileset dir="${deploy.temp.dir}/AdvanceQuery/patch/3.0/jss">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${deploy.temp.dir}/${war.dir}/pages" overwrite="true">
+			<fileset dir="${deploy.temp.dir}/AdvanceQuery/patch/3.0/pages">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${deploy.temp.dir}/${war.dir}/WEB-INF/classes" overwrite="true">
+			<fileset dir="${deploy.temp.dir}/AdvanceQuery/patch/3.0/src">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${deploy.temp.dir}/${war.dir}/WEB-INF/lib" overwrite="true">
+			<fileset dir="${deploy.temp.dir}/AdvanceQuery/">
+				<include name="AdvanceQuery.jar"/>
+			</fileset>
+		</copy>
+		
+		<antcall target="patch_aq3.0_to_commonpackage" />
+		<antcall target="patch_aq3.0_to_washu-commons" />
+		<antcall target="patch_adddeletecartaction_in_war" />
+ 
+		<propertyfile
+		    file="${deploy.temp.dir}/${war.dir}/WEB-INF/classes/ApplicationResources.properties"
+		    comment="Adding property for contact number">
+		    <entry  key="login.contactnumber" default="" operation="+" value="${contact.number}"/>  
+		</propertyfile>
+		
+		<antcall target="edit_hibernate_cfg_for_aq3.0"/>			 
+		<antcall target="edit_web.xml_for_aq3.0"/>
+	 
+	</target>	
+ 
+	<target name="edit_hibernate_cfg_for_aq3.0">
+	 	<replace casesensitive="true" 
+		       	file="${deploy.temp.dir}/${war.dir}/WEB-INF/classes/hibernate.cfg.xml">
+		     	<replacetoken><![CDATA[</session-factory>]]></replacetoken>  
+		       	<replacevalue>
+					<![CDATA[
+		  				<mapping resource="QueryTag.hbm.xml"/>
+		   				<mapping resource="QueryTagItem.hbm.xml"/>
+					</session-factory>]]>
+				</replacevalue> 
+		</replace>
+	</target>	
+	
+	<target name="patch_aq3.0_to_commonpackage">
+		<unzip src="${deploy.temp.dir}/${war.dir}/WEB-INF/lib/commonpackage-1.1.8.3.6.jar" dest="${base.dir}/temp">
+			<patternset>
+				<include name="**/*"/>
+			</patternset>
+		</unzip>
+			
+		<copy todir="${base.dir}/temp" overwrite="true">
+			<fileset dir="${deploy.temp.dir}/AdvanceQuery/patch/3.0/classes/common-package">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		
+		<zip destfile="${deploy.temp.dir}/${war.dir}/WEB-INF/lib/commonpackage-1.1.8.3.6.jar" basedir="${base.dir}/temp"/>
+		<delete dir="${base.dir}/temp"/>
+	</target>
+		
+	<target name="patch_aq3.0_to_washu-commons">
+		<unzip src="${deploy.temp.dir}/${war.dir}/WEB-INF/lib/washu-commons-1.1.7.jar" dest="${base.dir}/temp">
+			<patternset>
+				<include name="**/*"/>
+			</patternset>
+		</unzip>
+		
+		<copy todir="${base.dir}/temp" overwrite="true">
+			<fileset dir="${deploy.temp.dir}/AdvanceQuery/patch/3.0/classes/washu-commons">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		 
+		<zip destfile="${deploy.temp.dir}/${war.dir}/WEB-INF/lib/washu-commons-1.1.7.jar" basedir="${base.dir}/temp"/>
+		<delete dir="${base.dir}/temp"/>
+	</target>
+
+	<target name="edit_web.xml_for_aq3.0">
+	 	<replace casesensitive="true" 
+		       	file="${deploy.temp.dir}/${war.dir}/WEB-INF/web.xml">
+		     	<replacetoken><![CDATA[</web-app>]]></replacetoken>  
+		       	<replacevalue> <![CDATA[
+		  			<servlet>
+						<servlet-name>ImportQuery</servlet-name>
+						<servlet-class>edu.wustl.query.action.ImportQueryServlet</servlet-class>
+					</servlet>
+
+					<servlet-mapping>
+						<servlet-name>ImportQuery</servlet-name>
+						<url-pattern>/ImportQuery</url-pattern>
+					</servlet-mapping>
+				</web-app>]]>
+				</replacevalue> 
+		</replace>
+	</target>
+	
+	<target name="patch_adddeletecartaction_in_war">
+		<delete file="${deploy.temp.dir}/catissuecore/WEB-INF/classes/edu/wustl/catissuecore/action/AddDeleteCartAction.class" />
+		<copy todir="${deploy.temp.dir}/catissuecore/WEB-INF/classes/edu/wustl/catissuecore/action" 
+			overwrite="true">
+			<fileset dir="${base.dir}/patch/3.0/classes/catissuecore">
+				<include name="AddDeleteCartAction.class"/>
+			</fileset>
+		</copy>
+	</target>
+</project>

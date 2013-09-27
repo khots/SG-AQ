@@ -1,0 +1,1270 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"
+       "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">
+
+<tiles-definitions>
+
+	<!-- Home tab pages definitions start -->
+	<!-- Home tab pages definitions start -->
+	<definition name=".query.mainTitlePageDef" path="@@layoutPage@@">
+		@@tilesTitle@@
+		@@tilesHeaderLogin@@
+		@@tilesAppHeaderLogin@@
+		@@tilesCommonMenu@@
+		@@tilesSubMenu@@
+		@@tilesMainMenuHomeLogo@@
+		@@tilesContent@@
+		@@tilesAppFooter@@
+		@@tilesFooter@@
+	</definition>
+
+	<!-- Home tab pages definitions start -->
+	<definition name=".query.homePageDef" path="@@layoutPage@@">
+		@@tilesTitle@@
+		@@tilesHeader@@
+		@@tilesAppHeader@@
+		@@tilesCommonMenu@@
+		@@tilesSubMenu@@
+		@@tilesMainMenu@@
+		@@tilesContent@@
+		@@tilesAppFooter@@
+		@@tilesFooter@@
+	</definition>
+
+	<definition name=".query.titliSearchResultPage" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/TitliResultUpdatable.jsp" />
+	</definition>
+
+	<definition name=".query.reportProblemDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/ReportProblem.jsp" />
+	</definition>
+
+	<definition name=".query.reportProblemSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.forgotPasswordDef" extends=".query.homePageDef">
+
+		<put name="content" value="/pages/advQuery/content/common/ForgotPassword.jsp" />
+	</definition>
+
+	<definition name=".query.forgotPasswordSuccessDef" extends=".query.homePageDef">
+
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.userSignUpDef" extends=".query.homePageDef">
+
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/User.jsp" />
+	</definition>
+
+	<definition name=".query.errorPageDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/home/Error.jsp" />
+	</definition>
+
+	<definition name=".query.error.details" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/home/ErrorDetails.jsp" />
+	</definition>
+
+	<definition name=".query.userProfileDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/User.jsp" />
+	</definition>
+
+	<definition name=".query.changePasswordDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/home/ChangePassword.jsp" />
+	</definition>
+
+
+	<definition name=".query.userProfileSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.redirectToLoginPageDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/common/RedirectToLoginPage.jsp" />
+	</definition>
+
+	<definition name=".query.RedirectToHelp" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/Help.jsp" />
+	</definition>
+
+	<definition name=".query.contactUsDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/ApplicationFooterTab.jsp" />
+	</definition>
+
+	<definition name=".query.accessibilityDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/ApplicationFooterTab.jsp" />
+	</definition>
+
+	<definition name=".query.disclaimerDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/ApplicationFooterTab.jsp" />
+	</definition>
+
+	<definition name=".query.privacyNoticeDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/ApplicationFooterTab.jsp" />
+	</definition>
+
+	<!-- Home tab pages definitions end -->
+
+	<!-- Manage Administrative Data tab pages definitions start -->
+
+
+	<definition name=".query.manageAdminDataHomeDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/Home.jsp"/>
+	</definition>
+
+	<definition name=".query.userDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/User.jsp" />
+	</definition>
+
+	<definition name=".query.userAddSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.userEditSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.institutionDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/Institution.jsp" />
+	</definition>
+
+	<definition name=".query.institutionAddSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.institutionEditSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.approveUserDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/ApproveUser.jsp" />
+	</definition>
+	<definition name=".query.userDetailsDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/UserDetails.jsp" />
+	</definition>
+
+	<definition name=".query.reportedProblemDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/ReportedProblem.jsp" />
+	</definition>
+	<definition name=".query.problemDetailsDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/ProblemDetails.jsp" />
+	</definition>
+
+	<!-- Storage Type -->
+	<definition name=".query.storageTypeDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/StorageType.jsp" />
+	</definition>
+
+	<definition name=".query.storageTypeAddSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.storageTypeEditSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+	<!-- Storage Type -->
+
+	<!-- Storage Container -->
+	<definition name=".query.storageContainerDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/StorageContainer.jsp" />
+	</definition>
+
+    <definition name=".query.storageContainerBaseDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/StorageContainerBase.jsp" />
+	</definition>
+
+	<definition name=".query.arrayTypeDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/SpecimenArrayType.jsp" />
+	</definition>
+
+	<definition name=".query.storageContainerAddSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.storageContainerEditSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+	<!-- Storage Container -->
+
+	<!-- Site -->
+	<definition name=".query.siteDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/Site.jsp" />
+	</definition>
+
+	<definition name=".query.siteAddSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.siteEditSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+	<!-- Site -->
+
+	<!-- Biohazard -->
+	<definition name=".query.biohazardDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/Biohazard.jsp" />
+	</definition>
+
+	<definition name=".query.biohazardAddSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.biohazardEditSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+	<!-- Biohazard -->
+
+	<definition name=".query.mainCollectionProtocolDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/CollectionProtocolBase.jsp" />
+	</definition>
+
+	<definition name=".query.collectionProtocolDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/CollectionProtocol.jsp" />
+	</definition>
+
+	<definition name=".query.collectionProtocolAddSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.collectionProtocolEditSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.departmentDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/Department.jsp" />
+	</definition>
+
+	<definition name=".query.departmentAddSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.departmentEditSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.cancerResearchGroupDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/CancerResearchGroup.jsp" />
+	</definition>
+
+	<definition name=".query.cancerResearchGroupAddSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.cancerResearchGroupEditSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.distributionProtocolDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/DistributionProtocol.jsp" />
+	</definition>
+
+	<definition name=".query.distributionProtocolAddSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.distributionProtocolEditSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.reportProblemEditDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/ReportProblem.jsp" />
+	</definition>
+
+	<definition name=".query.editSearchPageDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/search/SimpleQueryInterface.jsp" />
+	</definition>
+
+	<definition name=".query.editSearchResultsFrameDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/DataViewFrame.jsp" />
+	</definition>
+
+	<definition name=".query.queryDataViewDef" path="/pages/advQuery/content/search/ContentLayout.jsp">
+	</definition>
+	<definition name=".query.queryHomeViewDef" path="/pages/advQuery/content/search/ContentLayout.jsp">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/CPQueryHome.jsp" />
+	</definition>
+
+	<definition name=".query.commonErrorDetailsDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/common/ErrorDetails.jsp" />
+	</definition>
+
+	<definition name=".query.editSearchResultsDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/search/DataView.jsp" />
+	</definition>
+
+	<!-- Manage Administrative Data tab pages definitions end -->
+
+	<!-- Manage BioSpecimen tab pages definitions start -->
+	<definition name=".query.manageBioSpecimenHomeDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/Home.jsp" />
+	</definition>
+
+	<!-- Bulk operations pages definitions start -->
+
+	<definition name=".query.bulkTransferEventsDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/bulkOperations/BulkTransferEvents.jsp" />
+	</definition>
+
+	<definition name=".query.bulkDisposalEventsDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/bulkOperations/BulkDisposalEvents.jsp" />
+	</definition>
+
+	<!-- Bulk operations pages definitions end -->
+
+	<definition name=".query.participantDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/Participant.jsp" />
+	</definition>
+
+	<definition name=".query.participantAddSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.participantEditSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.viewParticipantSurgicalPathologyReportDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/ViewParticipantSPR.jsp" />
+	</definition>
+
+
+	<!--Ajay For collection protocol reg-->
+	<definition name=".query.collectionProtocolRegistrationDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/CollectionProtocolRegistration.jsp" />
+	</definition>
+	<!--Deepti  For collection protocol reg from CP based view -->
+	<definition name=".query.collectionProtocolRegistrationDefCPBased" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/CollectionProtocolRegistration.jsp" />
+	</definition>
+
+	<definition name=".query.collectionProtocolRegistrationAddSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.collectionProtocolRegistrationEditSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+
+	<definition name=".query.accessionDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/Accession.jsp" />
+	</definition>
+
+	<definition name=".query.accessionAddSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.accessionEditSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<!-- NEW SPECIMEN EVENT PARAMETERS -->
+	<definition name=".query.newSpecimenEventParametersDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/SpecimenEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.newSpecimenEventParametersCPQueryDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/SpecimenEventParameters.jsp" />
+	</definition>
+
+	<!-- NEW SPECIMEN EVENT PARAMETERS -->
+
+	<!-- NEW SPECIMEN -->
+	<definition name=".query.newSpecimenDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/NewSpecimen.jsp" />
+	</definition>
+
+	<definition name=".query.newSpecimenAddSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.newSpecimenEditSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+	<!-- NEW SPECIMEN -->
+
+
+	<!-- CREATE SPECIMEN -->
+	<definition name=".query.createSpecimenDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/CreateSpecimen.jsp" />
+	</definition>
+
+
+	<definition name=".query.createSpecimenAddSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.createSpecimenEditSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+	<!-- CREATE SPECIMEN -->
+
+
+	<!-- SpecimenCollectionGroup Parameters -->
+	<definition name=".query.specimenCollectionGroupDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/SpecimenCollectionGroup.jsp" />
+	</definition>
+
+	<definition name=".query.specimenCollectionGroupAddSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.specimenCollectionGroupEditSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.viewSurgicalPathologyReportDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/ViewSPR.jsp" />
+	</definition>
+	<!-- SpecimenCollectionGroup Parameters -->
+
+	<!-- FrozenEventParameters -->
+	<definition name=".query.frozenEventParametersDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/FrozenEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.frozenEventParametersAddSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.frozenEventParametersEditSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+	<!-- FrozenEventParameters end -->
+
+	<!-- CheckInCheckOutEventParameters -->
+	<definition name=".query.checkInCheckOutEventParametersDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/CheckInCheckOutEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.checkInCheckOutEventParametersAddSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.checkInCheckOutEventParametersEditSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+	<!-- CheckInCheckOut EventParameters end -->
+
+	<!-- ReceivedOutEventParameters -->
+	<definition name=".query.receivedEventParametersDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/ReceivedEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.receivedEventParametersAddSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.receivedEventParametersEditSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+	<!-- Received EventParameters end -->
+
+	<!-- FluidSpecimenReviewEventParameters -->
+	<definition name=".query.fluidSpecimenReviewEventParametersDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/FluidSpecimenReviewEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.fluidSpecimenReviewEventParametersAddSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.fluidSpecimenReviewEventParametersEditSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+	<!-- FluidSpecimenReviewEventParameters end -->
+
+	<!-- CellSpecimenReviewParameters -->
+	<definition name=".query.cellSpecimenReviewParametersDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/CellSpecimenReviewParameters.jsp" />
+	</definition>
+
+	<definition name=".query.cellSpecimenReviewParametersAddSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.cellSpecimenReviewParametersEditSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+	<!-- CellSpecimenReviewParameters end -->
+
+	<!-- TissueSpecimenReviewEventParameters -->
+	<definition name=".query.tissueSpecimenReviewEventParametersDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/TissueSpecimenReviewEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.tissueSpecimenReviewEventParametersAddSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.tissueSpecimenReviewEventParametersEditSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+	<!-- TissueSpecimenReviewEventParameters end -->
+
+	<!-- DisposalEventParameters -->
+	<definition name=".query.disposalEventParametersDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/DisposalEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.disposalEventParametersAddSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.disposalEventParametersEditSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+	<!-- DisposalEventParameters end -->
+
+	<!-- ThawEventParameters -->
+	<definition name=".query.thawEventParametersDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/ThawEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.thawEventParametersAddSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.thawEventParametersEditSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+	<!-- ThawEventParameters end -->
+
+		<!-- collectionEventParameters -->
+	<definition name=".query.collectionEventParametersDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/CollectionEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.collectionEventParametersAddSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.collectionEventParametersEditSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+	<!-- collectionEventParameters end -->
+
+	<!-- TransferEventParameters -->
+	<definition name=".query.transferEventParametersDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/TransferEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.transferEventParametersAddSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.transferEventParametersEditSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+	<!-- transferEventParameters end -->
+
+	<!-- SpunEventParameters -->
+	<definition name=".query.spunEventParametersDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/SpunEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.spunEventParametersAddSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.spunEventParametersEditSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+	<!-- SpunEventParameters end -->
+	<!-- EmbeddedEventParameters -->
+	<definition name=".query.embeddedEventParametersDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/EmbeddedEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.embeddedEventParametersAddSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.embeddedEventParametersEditSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+	<!-- EmbeddedEventParameters end -->
+
+		<!-- fixedEventParameters -->
+	<definition name=".query.fixedEventParametersDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/FixedEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.fixedEventParametersAddSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.fixedEventParametersEditSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+	<!-- fixedEventParameters end -->
+
+	<!-- procedureEventParameters -->
+	<definition name=".query.procedureEventParametersDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/ProcedureEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.procedureEventParametersAddSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.procedureEventParametersEditSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+	<!-- procedureEventParameters end -->
+
+	<!-- MolecularSpecimenReviewParameters -->
+	<definition name=".query.molecularSpecimenReviewParametersDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/MolecularSpecimenReviewParameters.jsp" />
+	</definition>
+
+	<definition name=".query.molecularSpecimenReviewParametersAddSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+
+	<definition name=".query.molecularSpecimenReviewParametersEditSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/RedirectSpecimenEventParameters.jsp" />
+	</definition>
+	<!-- MolecularSpecimenReviewEventParameters end -->
+
+	<!-- Distribution -->
+	<definition name=".query.distributionDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/Distribution.jsp" />
+	</definition>
+
+
+	<definition name=".query.distributionAddSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.distributionEditSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.configurationSuccessDef" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/search/ConfigureResultView.jsp" />
+	</definition>
+
+
+	<definition name=".query.distributionReportSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/search/DistributionReport.jsp" />
+	</definition>
+
+	<definition name=".query.multipleSpecimenFlexDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/MultipleSpecimenFlex.jsp" />
+	</definition>
+
+	<definition name=".query.multipleSpecimenFlexCPQueryDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/MultipleSpecimenFlex.jsp" />
+	</definition>
+
+
+	<definition name=".query.initMultipleSpecimenDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/InitMultipleSpecimen.jsp" />
+	</definition>
+
+	<definition name=".query.multipleSpecimenDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/MultipleSpecimen.jsp" />
+	</definition>
+<!-- Mandar: 07Nov06: Entryfor MultipleSpecimen StorageLocation. -->
+	<definition name=".query.multipleSpecimenStorageLocationDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/MultipleSpecimenStorageLocation.jsp" />
+	</definition>
+
+
+	<definition name=".query.multipleSpecimenAddSuccessDef" extends=".query.homePageDef">
+            <put name="content" value="/pages/advQuery/content/manageBioSpecimen/SpecimenReport.jsp" />
+    </definition>
+
+	<!-- Distribution end -->
+
+	<!-- specimenEventParameters -->
+	<definition name=".query.specimenEventParametersDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/SpecimenEventParameterLinks.jsp" />
+	</definition>
+
+	<definition name=".query.specimenEventParametersAddSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+	<definition name=".query.specimenEventParametersEditSuccessDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+	<!-- specimenEventParameters end -->
+
+	<definition name=".query.editBioSpecimenSearchPageDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/search/SimpleQueryInterface.jsp" />
+	</definition>
+
+	<definition name=".query.editBioSpecimenSearchResultsDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/search/DataView.jsp" />
+	</definition>
+
+	<definition name=".query.editSpecimenArrayTypeSearchPageDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/search/DataView.jsp" />
+	</definition>
+
+	<!-- BioSpecimen tab pages definitions end -->
+
+	<!-- Search tab pages definitions start -->
+
+
+	<!--Added By Pallavi Mistry -->
+	<!--TreeNode view for DHTMLX tree grid view of storage container-->
+	<definition name=".query.queryResultsTreeViewNodeDef" path="/pages/advQuery/content/search/TreeNodeView.jsp">
+	</definition>
+
+	<definition name=".query.storageContainerTreeDef" path="/pages/advQuery/content/manageAdministrativeData/StorageContainerTree.jsp">
+	</definition>
+
+	<definition name=".query.searchHomeDef" extends=".query.homePageDef">
+		@@searchSubmenu@@
+		@@searchMainmenu@@
+		<put name="content" value="/pages/advQuery/content/search/Home.jsp" />
+	</definition>
+
+	<definition name=".query.searchAddSuccessDef" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+
+
+	<definition name=".query.conflictResolverDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/ConflictView.jsp" />
+	</definition>
+
+	<definition name=".query.simpleSearchDepartmentDef" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/Department.jsp" />
+	</definition>
+
+	<definition name=".query.simpleQueryInterfaceDef" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/search/SimpleQueryInterface.jsp" />
+	</definition>
+
+	<definition name=".query.simpleSearchSpecimenArrayTypeDef" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/SpecimenArrayType.jsp" />
+	</definition>
+
+	<definition name=".query.simpleSearchSpecimenArrayDef" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/SpecimenArray.jsp" />
+	</definition>
+
+	<definition name=".query.advanceQueryDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/search/AdvanceQuery.jsp" />
+	</definition>
+
+	<definition name=".query.queryResultsDef" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/search/QueryResultsView.jsp" />
+	</definition>
+
+	<!-- Query edit pages definitions begin -->
+	<definition name=".query.queryParticipantViewDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/Participant.jsp" />
+	</definition>
+	<definition name=".query.queryCollectionProtocolViewDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/CollectionProtocol.jsp" />
+	</definition>
+
+	<definition name=".query.querySpecimenCollectionGroupViewDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/SpecimenCollectionGroup.jsp" />
+	</definition>
+
+	<definition name=".query.querySpecimenViewDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/NewSpecimen.jsp" />
+	</definition>
+
+	<definition name=".query.queryResultsSpreadsheetViewDef" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/search/SimpleSearchDataView.jsp"/>
+	</definition>
+	
+	<definition name=".query.queryCollectionProtocolRegistrationDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/CollectionProtocolRegistration.jsp" />
+	</definition>
+
+	<definition name=".query.storageLocationViewDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/StorageContainerLocationView.jsp" />
+	</definition>
+
+
+	<definition name=".query.storageLocationGridViewDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/StorageContainerGridView.jsp" />
+	</definition>
+
+	<definition name=".query.storageLocationMapViewDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/ViewStorageContainerMap.jsp" />
+	</definition>
+
+	<definition name=".query.participantEditDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/Participant.jsp" />
+	</definition>
+
+	<definition name=".query.collectionProtocolEditDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/CollectionProtocol.jsp" />
+	</definition>
+
+	<definition name=".query.specimenCollectionGroupEditDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/SpecimenCollectionGroup.jsp" />
+	</definition>
+
+	<definition name=".query.specimenEditDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/NewSpecimen.jsp" />
+	</definition>
+
+	<definition name=".query.createCPSpecimenDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/CreateSpecimen.jsp" />
+	</definition>
+
+
+	<!-- ShoppingCart -->
+	<definition name=".query.shoppingCartDef" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/search/querysuite/QueryShoppingCart.jsp" />
+	</definition>
+	<!-- ShoppingCart -->
+
+	<!-- ASSIGN PRIVILEGES -->
+	<definition name=".query.assignPrivilegesPageDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/search/AssignPrivileges.jsp" />
+	</definition>
+
+	<definition name=".query.assignPrivilegesDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/common/success.jsp" />
+	</definition>
+	<!-- ASSIGN PRIVILEGES -->
+
+	<!-- ADVANCE QUERY INTERFACE -->
+
+	<definition name=".query.advanceQueryInterfaceDef" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/search/AdvanceQueryInterface.jsp" />
+	</definition>
+
+	<definition name=".query.participantSearchDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/search/AdvanceSearchUI.jsp" />
+	</definition>
+
+	<definition name=".query.specimenSearchDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/search/SpecimenSearch.jsp" />
+	</definition>
+
+	<definition name=".query.specimenCollectionGroupSearchDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/search/AdvanceSearchUI.jsp" />
+	</definition>
+
+	<definition name=".query.collectionProtocolSearchDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/search/AdvanceSearchUI.jsp" />
+	</definition>
+
+	<definition name=".query.defaultSearchDef" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/search/AdvanceQueryInterfaceDefaultPage.jsp" />
+	</definition>
+
+	<definition name=".query.advanceQueryViewDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/search/AdvanceQueryView.jsp" />
+	</definition>
+
+	<definition name=".query.advanceQueryDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/search/AdvanceQuery.jsp" />
+	</definition>
+
+	<definition name=".query.advanceQueryResultsDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/search/AdvanceQueryInterface.jsp" />
+	</definition>
+
+	<definition name=".query.advanceQueryRedirectDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/search/RedirectAdvancedSearch.jsp" />
+	</definition>
+
+	<definition name=".query.advanceConfigurationSuccessDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/search/ConfigureResultView.jsp" />
+	</definition>
+
+
+
+	<!-- ADVANCE QUERY INTERFACE -->
+
+	<!-- Query edit pages definitions end -->
+
+	<!-- Search tab pages definitions end -->
+
+	<!-- Summary tab pages definitions Begin -->
+	<definition name=".query.summaryHomeDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/summary/Home.jsp" />
+	</definition>
+	<!-- Summary tab pages definitions End -->
+
+	<!-- Help tab pages definitions Begin -->
+	<definition name=".query.helpHomeDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/help/Home.jsp" />
+	</definition>
+	<!-- Help tab pages definitions End -->
+
+	<!-- Summary tab pages definitions Begin -->
+	<definition name=".query.summaryLoggedInDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/summary/Home.jsp" />
+	</definition>
+	<!-- Summary tab pages definitions End -->
+
+	<!-- Help tab pages definitions Begin -->
+	<definition name=".query.helpLoggedInDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/help/Home.jsp" />
+	</definition>
+	<!-- Help tab pages definitions End -->
+
+	<!-- CREATE SPECIMEN -->
+	<definition name=".query.aliquotDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/Aliquots.jsp" />
+	</definition>
+
+
+	<!-- ALIQUOT SUMMARY -->
+	<definition name=".query.aliquotSummaryDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/AliquotSummary.jsp" />
+	</definition>
+
+
+	<!-- CREATE SPECIMEN ARRAY ALIQUOTS -->
+	<definition name=".query.specimenArrayAliquotDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/SpecimenArrayAliquots.jsp" />
+	</definition>
+
+	<definition name=".query.specimenArrayAliquotSummaryDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/SpecimenArrayAliquotsSummary.jsp" />
+	</definition>
+
+	<!--  QuickEvents -->
+	<definition name=".query.quickEventsDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/QuickEvents.jsp" />
+	</definition>
+
+	<!-- SIMILAR CONTAINERS -->
+	<definition name=".query.similarContainersDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/SimilarContainers.jsp" />
+	</definition>
+
+	<definition name=".query.similarContainersList" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/SimilarContainersList.jsp" />
+	</definition>
+
+	<definition name=".query.arrayDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/SpecimenArray.jsp" />
+	</definition>
+
+
+	<definition name=".query.querySpecimenArrayViewDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/SpecimenArray.jsp" />
+	</definition>
+
+
+	<definition name=".query.cpBasedSearchDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/CPBasedSearchResults.jsp" />
+	</definition>
+	<definition name=".participantAddSuccess" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/CPBasedSearchResultsDirect.jsp" />
+	</definition>
+
+	<definition name=".query.newSpecimenEventParametersCPQueryDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/SpecimenEventParameters.jsp" />
+	</definition>
+	<definition name=".query.createSpecimenCPQueryDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/CreateSpecimen.jsp" />
+	</definition>
+	<definition name=".query.distributionCPQueryDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/Distribution.jsp" />
+	</definition>
+	<definition name=".query.configurationSuccessCPQueryDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/search/ConfigureResultView.jsp" />
+	</definition>
+	<definition name=".query.distributionReportSuccessCPQueryDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/search/DistributionReport.jsp" />
+	</definition>
+	<definition name=".query.distributionReportSuccessCPQueryDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/search/DistributionReport.jsp" />
+	</definition>
+	<definition name=".query.aliquotCPQueryDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/Aliquots.jsp" />
+	</definition>
+
+	<definition name=".query.aliquotSummaryCpQueryDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/AliquotSummary.jsp" />
+	</definition>
+	<definition name=".query.collectionProtocolRegistrationCPQueryDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/CollectionProtocolRegistration.jsp" />
+	</definition>
+	<!-- Sub Protocol -->
+	<definition name=".query.subcollectionProtocolRegistrationCPQueryDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/SubCollectionProtocolRegistration.jsp" />
+	</definition>
+	<!-- Sub Protocol -->
+	<definition name=".query.initMultipleSpecimenCPQueryDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/InitMultipleSpecimen.jsp" />
+	</definition>
+	<definition name=".query.multipleSpecimenStorageLocationCPQueryDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/MultipleSpecimenStorageLocation.jsp" />
+	</definition>
+	<definition name=".query.multipleSpecimenAddSuccessCPQueryDef" extends=".query.queryDataViewDef">
+            <put name="content" value="/pages/advQuery/content/manageBioSpecimen/SpecimenReport.jsp" />
+    </definition>
+	<definition name=".query.multipleSpecimenCPQueryDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/MultipleSpecimen.jsp" />
+	</definition>
+	<definition name=".query.specimenCollectionGroupTechDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/CPQuerySCGForTechnician.jsp" />
+	</definition>
+<!--P.G. - Start 24May07:Bug 4291-->
+	<definition name=".query.bioBlankDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/blank.jsp" />
+	</definition>
+<!--P.G. - End -->
+
+<!-- Added for Specimen disposal bug #5013	-->
+	<definition name=".query.homeDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/Home.jsp" />
+	</definition>
+
+	<definition name=".query.managehomedef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/Home.jsp" />
+	</definition>
+<!--bug #5013. - End -->
+
+<!-- for ordering consents: kalpana-->
+
+<definition name=".query.OrderingConsentsDef" path="/pages/advQuery/content/ConsentTracking/OrderingSpecimen.jsp">
+</definition>
+
+<definition name=".query.ViewAllOrderingConsentsDef" path="/pages/advQuery/content/ConsentTracking/ViewAllOrderingConsents.jsp">
+</definition>
+
+<!--end-->
+
+<!--Orderering System-->
+	<!--Added By Deepti request order page -->
+	<definition name=".query.orderDef" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/orderingsystem/RequestOrder.jsp" />
+	</definition>
+
+	<!--Added By Deepti  ordering page -->
+	<definition name=".query.orderingsystem.orderItem" path="/pages/advQuery/content/orderingsystem/OrderItem.jsp">
+	</definition>
+
+	<definition name=".query.orderingsystem.orderList" path="/pages/advQuery/content/orderingsystem/OrderList.jsp">
+	</definition>
+
+	<definition name=".query.orderingsystem.orderbiospecimenarray" path="/pages/advQuery/content/orderingsystem/OrderBiospecimenArray.jsp">
+	</definition>
+
+	<definition name=".query.orderingsystem.orderMain" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/orderingsystem/OrderingSystemMain.jsp" />
+	</definition>
+
+	<definition name=".query.orderingsystem.definearray" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/orderingsystem/DefineArray.jsp" />
+	</definition>
+
+	<definition name=".query.orderingsystem.requestOrder" path="/pages/advQuery/content/orderingsystem/OrderSpecimen.jsp">
+	</definition>
+
+	<definition name=".query.orderingsystem.orderpathologycase" path="/pages/advQuery/content/orderingsystem/OrderPathologyCase.jsp">
+	</definition>
+
+
+	<definition name=".query.requestListDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/orderingsystem/RequestListView.jsp" />
+	</definition>
+
+	<definition name=".query.requestDetailsDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/orderingsystem/RequestDetails.jsp" />
+	</definition>
+
+	<definition name=".query.arrayRequestsDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/orderingsystem/ArrayRequests.jsp" />
+	</definition>
+
+	<definition name=".query.myListTabDef" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/search/MyListTabPage.jsp" />
+	</definition>
+
+
+   <!--Change By Virender for PopUp on Submit Button Click -->
+
+	<definition name=".query.DistributingConsentsDef" path="/pages/advQuery/content/ConsentTracking/DistributingSpecimen.jsp">
+	</definition>
+
+	<definition name=".query.ViewAllConsentsDef" path="/pages/advQuery/content/ConsentTracking/ViewAllConsents.jsp">
+	</definition>
+	<!--Change By Virender -->
+	<!--Specimen tree view for Ordering System.-->
+	<!-- definition name=".query.requestDetailsTreeViewDef" path="/pages/advQuery/content/search/TreeView.jsp" -->
+	<definition name=".query.requestDetailsTreeViewDef" path="/pages/advQuery/content/orderingsystem/SpecimenTreeView.jsp">
+	</definition>
+
+<!-- Conflict Resolver :kalpana -->
+	<definition name=".query.conflictViewDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/ConflictView.jsp" />
+	</definition>
+
+	<definition name=".query.conflictDetailsViewDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/ConflictDetailsView.jsp" />
+	</definition>
+
+	<definition name=".query.conflictCommonDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/ConflictCommonView.jsp" />
+	</definition>
+
+
+	<definition name=".query.conflictParticipantDataDetailsDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/ConflictParticipantDataDetailsView.jsp" />
+	</definition>
+
+	<definition name=".query.conflictSCGDataDetailsDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/ConflictSCGDataDetailsView.jsp" />
+	</definition>
+
+
+	<definition name=".query.conflictParticipantSCGTreeDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/ConflictParticipantSCGTreeView.jsp" />
+	</definition>
+
+	<definition name=".query.conflictSCGDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/ConflictSCGView.jsp" />
+	</definition>
+
+
+	<definition name=".query.conflictReportDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/ConflictReportView.jsp" />
+	</definition>
+
+
+
+<!--Conflict Resolver :end -->
+
+	<!-- For ViewSpr on Specimen Page -->
+	<definition name=".query.newSpecimenViewSPRDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/NewSpecimenViewSPR.jsp" />
+	</definition>
+	<definition name=".query.newSpecimenEditViewSPRDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/NewSpecimenViewSPR.jsp" />
+	</definition>
+
+	 <!-- Definition code : Mandar Shidhore : 06/11/06 -->
+	<definition name=".query.searchCategory" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/search/querysuite/AddLimits.jsp" />
+	</definition>
+
+	<definition name=".query.viewSearchResults" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/search/querysuite/ViewResults.jsp" />
+	</definition>
+
+	<definition name=".query.collectQueryParameter" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/search/querysuite/ParameterizedQueryExecutePage.jsp" />
+	</definition>
+
+	<definition name=".query.defineSearchResultsView" extends=".query.searchHomeDef">
+		<put name="content" value=".query.defineSearchResultsWizard" />
+	</definition>
+
+	<definition name=".query.defineSearchResultsWizard" path="/pages/advQuery/content/search/querysuite/DefineSearchResultsView.jsp">
+		<put name="content" value="/pages/advQuery/content/search/querysuite/DefineSearchResultsViewDefineTree.jsp"/>
+	</definition>
+
+	<definition name=".query.gridViewReport" path="/pages/advQuery/content/search/querysuite/GridViewReport.jsp">
+		<put name="content" value="/pages/advQuery/content/search/querysuite/GridViewReport.jsp"/>
+	</definition>
+
+	<definition name=".query.defineSearchResultsViewBNT" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/search/querysuite/DefineSearchResultsViewBuildNewTree.jsp" />
+	</definition>
+
+	<definition name=".query.queryViewPageDef" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/search/querysuite/QueryListView.jsp" />
+	</definition>
+
+	<definition name=".query.cacheErrorPageDef" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/search/EntityCacheErrorPage.jsp" />
+	</definition>
+
+	<definition name=".query.saveQuery" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/SavedQueryConditionPage.jsp" />
+	</definition>
+
+
+	 <!-- Definition code : Deepti Shelar : For pagination : 20/07/2007 -->
+	<definition name=".query.defineQueryResultsView" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/search/querysuite/DefineGridResultsView.jsp" />
+	</definition>
+
+	<definition name=".query.participantConsentsDef" path="/pages/advQuery/content/ConsentTracking/ParticipantConsentTracking.jsp">
+	</definition>
+
+<!--	<definition name=".query.defineSearchResultsView" extends=".query.searchHomeDef">
+		<put name="content" value="/pages/advQuery/content/search/querysuite/DefineSearchResultsView.jsp" />
+	</definition> -->
+
+	<!--Annotation defs-->
+	<definition name=".query.annotationDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/DefineAnnotations.jsp" />
+	</definition>
+
+	<definition name=".query.DefineAnnotationsInformationPage" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/DefineAnnotationsInformationPage.jsp" />
+	</definition>
+
+
+	<definition name=".query.dynamicFormDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/DynamicExtensionsHome.jsp" />
+	</definition>
+
+	<definition name=".query.viewSpecimenAnnotationCPQuery" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/NewSpecimenAnnotation.jsp" />
+	</definition>
+
+	<definition name=".query.viewSpecimenAnnotation" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/NewSpecimenAnnotation.jsp" />
+	</definition>
+
+	<definition name=".query.specimenCollectionGroupViewSPRDef" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/SCGViewSPR.jsp" />
+	</definition>
+	<definition name=".query.specimenCollectionGroupEditViewSPRDef" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/SCGViewSPR.jsp" />
+	</definition>
+
+	<definition name=".query.viewSpecimenCollectionGroupAnnotation" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageBioSpecimen/NewSpecimenCollectioGroupAnnotation.jsp" />
+	</definition>
+	<!--Annotation defs End-->
+
+	<definition name=".query.DefineEvents" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/DefineEvents.jsp" />
+	</definition>
+
+	<definition name=".query.ProtocolEventsDetails" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/ProtocolEventDetails.jsp" />
+	</definition>
+
+	<definition name=".query.CreateSpecimenTemplate" extends=".query.queryDataViewDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/CreateSpecimenTemplate.jsp" />
+	</definition>
+
+	<!-- for specimen summary -->
+	<definition name=".query.viewSpecimenSummary" extends=".query.homePageDef">
+		<put name="content" value="/pages/AnticipatorySpecimens.jsp" />
+	</definition>
+	<definition name=".query.specimenSummaryView" extends=".query.manageBioSpecimenHomeDef">
+		<put name="content" value="/pages/SpecimenSummary.jsp" />
+	</definition>
+
+	<!-- For Admini View -->
+	<definition name=".query.ReviewQuarantineRequests" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/ReviewQuarantineRequests.jsp" />
+	</definition>
+	<definition name=".query.ViewSPR" extends=".query.homePageDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/AdministratorViewSPR.jsp" />
+	</definition>
+	<definition name=".query.NoPendingSPRRequest" extends=".query.manageAdminDataHomeDef">
+		<put name="content" value="/pages/advQuery/content/manageAdministrativeData/NoPendingSPRRequest.jsp" />
+	</definition>
+	<!-- For Admini View -->
+
+	<definition name=".query.SpecimenCollectionRequirementGroupEditDef" path="/pages/advQuery/content/common/success.jsp">
+	</definition>
+</tiles-definitions>

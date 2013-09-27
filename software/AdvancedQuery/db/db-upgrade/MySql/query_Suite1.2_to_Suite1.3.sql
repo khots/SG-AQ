@@ -1,0 +1,1 @@
+alter table QUERY_PARAMETERIZED_QUERY add column SHOW_TREE tinyint(1) default 1;

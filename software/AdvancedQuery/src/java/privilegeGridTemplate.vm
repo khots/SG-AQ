@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<rows>
+	#foreach( $gridData in $gridPopulateObjectList )
+		<row id="$gridData.identifier">
+				<cell><![CDATA[$gridData.label]]></cell>
+		</row>
+	#end
+</rows>

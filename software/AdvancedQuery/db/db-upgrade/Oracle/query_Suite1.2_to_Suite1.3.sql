@@ -1,0 +1,1 @@
+alter table QUERY_PARAMETERIZED_QUERY add (SHOW_TREE number(1,0) default 1);

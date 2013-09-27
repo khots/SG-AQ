@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+
+	<property name="text.type" value="varchar" dbms="mysql" />
+	<property name="text.type" value="varchar2" dbms="oracle" />
+
+	<property name="boolean.type" value="bit(1)" dbms="mysql" />
+	<property name="boolean.type" value="number(1,0)" dbms="oracle" />
+
+	<property name="int.type" value="bigint(20)" dbms="mysql" />
+	<property name="int.type" value="number(19,0)" dbms="oracle" />
+
+	<property name="tinyint.type" value="tinyint(1)" dbms="mysql" />
+	<property name="tinyint.type" value="number(1,0)" dbms="oracle" />
+
+	<changeSet id="1" author="dpatil" runOnChange="true" >
+		<tagDatabase tag="aq_db_1.2" />		 
+	</changeSet>
+	
+	<changeSet id="2" author="dpatil" runOnChange="true">
+		<addUniqueConstraint constraintName="CSM_USER_ID_UNIQUE_KEY"
+			tableName="CATISSUE_USER" columnNames="CSM_USER_ID" />
+		<rollback>
+			<dropUniqueConstraint
+				constraintName="CSM_USER_ID_UNIQUE_KEY"
+				tableName="CATISSUE_USER"
+				uniqueColumns="CSM_USER_ID"/>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="3" author="dpatil"  runOnChange="true">
+	<addForeignKeyConstraint constraintName="FK_CATISSUE_USER_CSMID"
+			baseTableName="CATISSUE_USER" baseColumnNames="CSM_USER_ID"
+			referencedTableName="CSM_USER"
+                        referencedColumnNames="USER_ID" />
+                        
+       		<rollback>
+       			<dropForeignKeyConstraint
+       				baseTableName="CATISSUE_USER"
+       				constraintName="FK_CATISSUE_USER_CSMID"/>
+       		</rollback>
+	</changeSet>
+	<changeSet id="4" author="dpatil" runOnChange="true">
+		<!-- ALTER TABLE QUERY -->
+	 	<addColumn tableName="QUERY">
+			<column name="IS_NORMALIZED_VIEW" type="${boolean.type}" defaultValueBoolean="false" />
+		</addColumn>
+		
+		<rollback>
+			<dropColumn
+				columnName="IS_NORMALIZED_VIEW"
+				tableName="QUERY"/>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="5" author="dpatil" runOnChange="true">
+		<!-- ALTER TABLE QUERY_PARAMAETERIZED_QUERY -->
+		<addColumn tableName="QUERY_PARAMETERIZED_QUERY">
+			<column name="SHOW_TREE" type="${tinyint.type}" defaultValue="1" />
+		</addColumn>	
+		<rollback>
+			<dropColumn  
+           			columnName="SHOW_TREE"
+            			tableName="QUERY_PARAMETERIZED_QUERY"/>
+		</rollback>	
+	</changeSet>
+
+	<changeSet id="6" author="dpatil" runOnChange="true">
+
+		<createTable tableName="QUERY_TAGS">
+			<column name="IDENTIFIER" type="${int.type}">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="TAG_LABEL" type="${text.type}(255)">
+				<constraints unique="true" nullable="false" />
+			</column>
+			<column name="USER_ID" type="${int.type}">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<createTable tableName="QUERY_TAG_ITEMS">
+			<column name="IDENTIFIER" type="${int.type}">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="TAG_ID" type="${int.type}">
+				<constraints nullable="false" />
+			</column>
+			<column name="OBJ_ID" type="${int.type}">
+				<constraints nullable="false" />
+			</column> 
+		</createTable>
+
+
+		<addForeignKeyConstraint constraintName="FK_TAGITEM_TAG_ID"
+			baseTableName="QUERY_TAG_ITEMS" baseColumnNames="TAG_ID"
+			referencedTableName="QUERY_TAGS" referencedColumnNames="IDENTIFIER" />
+
+		<addForeignKeyConstraint constraintName="FK_QUERYTAG_USER_ID"
+			baseTableName="QUERY_TAGS" baseColumnNames="USER_ID"
+				referencedTableName="CATISSUE_USER"
+				referencedColumnNames="IDENTIFIER" />
+
+	        <addForeignKeyConstraint constraintName="FK_QUERYTAG_OBJ_ID"
+			baseTableName="QUERY_TAG_ITEMS" baseColumnNames="OBJ_ID"
+				referencedTableName="QUERY_PARAMETERIZED_QUERY"
+				referencedColumnNames="IDENTIFIER" />
+
+		<addUniqueConstraint constraintName="S_TAGID_UNIQUE_KEY"
+			tableName="QUERY_TAG_ITEMS" columnNames="TAG_ID,OBJ_ID" />
+
+		<addUniqueConstraint constraintName="USRID_TAGLABEL_UNIQUE_KEY"
+			tableName="QUERY_TAGS" columnNames="TAG_LABEL,USER_ID" />
+
+		<rollback>
+			<dropTable cascadeConstraints="true"
+				tableName="QUERY_TAG_ITEMS"/>
+			<dropTable cascadeConstraints="true"
+				tableName="QUERY_TAGS"/>
+		</rollback>
+	</changeSet> 	 
+
+	<changeSet id="7" author="dpatil" runOnChange="true">
+
+		<createTable tableName="SHARED_QUERY_TAGS">
+			<column name="TAG_ID" type="${int.type}">
+				<constraints nullable="false" />
+			</column>
+			<column name="USER_ID" type="${int.type}">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		
+		<addForeignKeyConstraint constraintName="FK_SHAREQUERY_TAG_ID"
+			baseTableName="SHARED_QUERY_TAGS" baseColumnNames="TAG_ID"
+			referencedTableName="QUERY_TAGS" referencedColumnNames="IDENTIFIER" /> 
+	
+		<addForeignKeyConstraint constraintName="FK_SHAREQUERY_USER_ID"
+			baseTableName="SHARED_QUERY_TAGS" baseColumnNames="USER_ID"
+			referencedTableName="CATISSUE_USER" referencedColumnNames="CSM_USER_ID" />
+			
+		<addUniqueConstraint constraintName="Q_TAGID_USERID_UNIQUE_KEY"
+			tableName="SHARED_QUERY_TAGS" columnNames="TAG_ID,USER_ID" />
+
+		<rollback>
+			<dropTable cascadeConstraints="true"
+				tableName="SHARED_QUERY_TAGS"/>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="8" author="dpatil" runOnChange="true">
+		<addColumn tableName="QUERY_PARAMETERIZED_QUERY">
+			<column name="STATUS" type="${text.type}(32)"  defaultValue="ACTIVE"/>
+		</addColumn>
+		<rollback>
+			<dropColumn	
+				columnName="STATUS"
+				tableName="QUERY_PARAMETERIZED_QUERY"/>
+		</rollback>
+	</changeSet>
+
+</databaseChangeLog>         

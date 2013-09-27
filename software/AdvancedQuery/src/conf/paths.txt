@@ -1,0 +1,5 @@
+edu.wustl.clinportal.domain.ClinicalStudy,edu.wustl.clinportal.domain.Participant
+edu.wustl.clinportal.domain.ClinicalStudy,edu.wustl.clinportal.domain.User,edu.wustl.clinportal.domain.Institution
+edu.wustl.clinportal.domain.ClinicalStudy,edu.wustl.clinportal.domain.ClinicalStudyRegistration,edu.wustl.clinportal.domain.Participant,edu.wustl.clinportal.domain.Race
+edu.wustl.clinportal.domain.SpecimenProtocol,edu.wustl.clinportal.domain.Address
+edu.wustl.clinportal.domain.User,edu.wustl.clinportal.domain.Department,edu.wustl.clinportal.domain.Password

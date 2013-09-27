@@ -1,0 +1,21 @@
+.active-column-0 {
+	width: 30px
+}
+
+tr#hiddenCombo {
+	display: none;
+}
+
+.nav_button {
+	border: 1px solid #A4BED4;
+	border-radius: 6px;
+	padding: 5px 0;
+	width: 130px;
+	font-size: 11px;
+	background-image: -ms-linear-gradient(top, #F2F2F2 20%, #CCCCCC 90%);
+	background-image: -moz-linear-gradient(top, #F2F2F2 20%, #CCCCCC 90%);
+	background-image: -o-linear-gradient(top, #F2F2F2 20%, #CCCCCC 90%);
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.2, #F2F2F2), color-stop(0.9, #CCCCCC));
+	background-image: -webkit-linear-gradient(top, #F2F2F2 20%, #CCCCCC 90%);
+	background-image: linear-gradient(to bottom, #F2F2F2 20%, #CCCCCC 90%);		
+}

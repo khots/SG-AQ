@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	borderThickness="2"  width="330" height="88" color="black" backgroundColor="#e1b6a3"  
+	implements="flash.utils.IExternalizable"
+	borderColor="#000000" borderStyle="solid">
+	
+	<mx:Script>
+	
+	private var firstAttributeId: String = null;
+	
+	private var secondAttributeId: String = null;
+	
+	private var firstAttributeName: String = null;
+	
+	private var secondAttributeName: String = null;
+	
+	private var firstAttributeDataType: String = null;
+	
+	private var secondAttributeDataType: String = null;
+	
+	public function getFirstAttributeId(): String
+	{
+		return this.firstAttributeId;		
+	}
+	
+	public function setFirstAttributeId(firstAttributeId: String): void
+	{
+		this.firstAttributeId = firstAttributeId;
+	}
+	
+	public function getSecondAttributeId(): String
+	{
+		return this.secondAttributeId;		
+	}
+	
+	public function setSecondAttributeId(secondAttributeId: String): void
+	{
+		this.secondAttributeId = secondAttributeId;
+	}
+	
+	public function getFirstAttributeName(): String
+	{
+		return this.firstAttributeName;		
+	}
+	
+	public function setFirstAttributeName(firstAttributeName: String): void
+	{
+		this.firstAttributeName = firstAttributeName;
+	}
+	
+	public function getSecondAttributeName(): String
+	{
+		return this.secondAttributeName;		
+	}
+	
+	public function setSecondAttributeName(secondAttributeName: String): void
+	{
+		this.secondAttributeName = secondAttributeName;
+	}
+	
+	public function getFirstAttributeDataType(): String
+	{
+		return this.firstAttributeDataType;		
+	}
+	
+	public function setFirstAttributeDataType(firstAttributeDataType: String): void
+	{
+		this.firstAttributeDataType = firstAttributeDataType;
+	}
+	
+	public function getSecondAttributeDataType(): String
+	{
+		return this.secondAttributeDataType;		
+	}
+	
+	public function setSecondAttributeDataType(secondAttributeDataType: String): void
+	{
+		this.secondAttributeDataType = secondAttributeDataType;
+	}
+	
+	/**
+	 * Read serialized data.
+	 */
+	public function readExternal(input:IDataInput): void 
+	{
+		this.name = input.readUTF();
+		this.firstAttributeId = input.readUTF();
+		this.firstAttributeName = input.readUTF();
+		this.firstAttributeDataType = input.readUTF();
+		this.secondAttributeId = input.readUTF();
+		this.secondAttributeName = input.readUTF();
+		this.secondAttributeDataType = input.readUTF();
+	}
+        
+    /**
+     *  Write Searialized Data.
+     */
+	public function writeExternal(out:IDataOutput): void 
+    {
+    	//Alert.show("in write");
+    	//Alert.show(this.firstAttributeId);
+    	out.writeUTF(this.name);
+    	out.writeUTF(this.firstAttributeId);
+    	out.writeUTF(this.firstAttributeName);
+    	out.writeUTF(this.firstAttributeDataType);
+    	out.writeUTF(this.secondAttributeId);
+    	out.writeUTF(this.secondAttributeName);
+    	out.writeUTF(this.secondAttributeDataType);    	
+    }
+	
+	</mx:Script>
+	
+</mx:Canvas>

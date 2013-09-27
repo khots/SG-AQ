@@ -1,0 +1,415 @@
+<?xml version ="1.0"?>
+<project name="Query Integration">
+
+	<!--define require dir and Properties -->
+	<property name="base.dir" value="." />
+	<property file="advanceQuery.properties" />
+	<property name="suite.struts.config.file" value="struts-config.xml" />
+	<property name="suite.hibernate.config.file" value="hibernate.cfg.xml" />
+	<property name="suite.tiles.def.file" value="tiles-defs.xml" />
+	<property name="oracle.sql.dir" value="${base.dir}/db/db-install/Oracle" />
+	<property name="mysql.sql.dir" value="${base.dir}/db/db-install/MySql" />
+	<property name="msSqlServer.sql.dir" value="${base.dir}/db/db-install/MsSqlServer" />
+
+	<!--Advance Query Related  Start-->
+	<!--
+		Check user selected deploy.AdvanceQuery to true and
+		AdvanceQuery_Installable.zip exists
+	-->
+	 
+	<target name="aq_check_prerequisite">
+		<!--
+			Check AdvanceQueryInstallable.zip file exists or not in base
+			directory.
+		-->
+		<echo message="aq_check_prerequisite in process........" />
+		<available file="${base.dir}/AdvanceQuery_Installable.zip" property="file.exists" value="false" />
+		<if>
+			<not>
+				<isset property="file.exists" />
+			</not>
+			<then>
+				<!--
+					<fail message="AdvanceQuery_Installable.zip file not found. It
+					should be in base directory to deploy shippingtracking." />
+				-->
+				<echo message="AdvanceQuery_Installable.zip file not found. It should be in base directory to deploy Advance Query." level="error" />
+			</then>
+			<else>
+				<echo message="Advance Query is ready to use." />
+			</else>
+		</if>
+	</target>
+
+	<target name="aq_integrate_app">
+		<echo message="Integrating Advance Query Application ...." />
+		<echo message="Unzip of Advance Query Module done" />
+		<!-- Inject db specific information to configuration files -->
+		<echo message="datatype : ${database.type}" />
+		<echo message="deploy temp dir : ${deploy.temp.dir}" />
+		<echo message="war dir: ${war.dir}" />
+		 
+		<antcall target="upgrade_to_plus_30"/>  
+		<if>
+			<equals arg1="mysql" arg2="${database.type}" />
+			<then>
+				<antcall target="aq_mysql_config" />
+			</then>
+			<elseif>
+				<equals arg1="oracle" arg2="${database.type}" />
+				<then>
+					<echo message="${database.type}" />
+					<antcall target="aq_oracle_config" />
+				</then>
+			</elseif>
+			<elseif>
+				<equals arg1="db2" arg2="${database.type}" />
+				<then>
+					<echo message="${database.type}" />
+					<antcall target="aq_db2_config" />
+				</then>
+			</elseif>
+			<else>
+				<echo message="DATABASE INITIALIZATION FAILED PLEASE CHECK DATABASE.TYPE PROPERTY" level="error" />
+			</else>
+		</if>
+		<!--Copying the Query property file to suite classes -->
+		<copy file="query.properties" todir="${deploy.temp.dir}/${war.dir}/WEB-INF/classes/" overwrite="true" />
+
+		<!-- Copying queryDbutil.properties to suite classes-->
+		<copy file="queryDbutil.properties" todir="${deploy.temp.dir}/${war.dir}/WEB-INF/classes/" overwrite="true" />
+
+		<!--Copying the Advance Query jar file to deploytempSuite
+
+		<copy file="AdvanceQuery${aq.jar.version}.jar" todir="${deploy.temp.dir}/${war.dir}/WEB-INF/lib" overwrite="true" />
+		<echo message="Copied Advance Query Jar file" /> -->
+
+		<antcall target="modify_query_hibernate_cfg" />
+
+		<!--
+			Copy *.properties, QueryHibernate.cfg.xml, *.jsp, *.css, *.images,
+			advance query-struts-config.xml to respective folders
+		-->
+		<copy todir="${deploy.temp.dir}/${war.dir}/WEB-INF/classes" overwrite="true">
+			<fileset dir=".">
+				<include name="QueryHibernate.cfg.xml" />
+			</fileset>
+		</copy>
+
+		<!--<copy todir="${deploy.temp.dir}/${war.dir}/WEB-INF/classes"
+			overwrite="false">
+			<fileset dir=".">
+				<include name="DynamicExtensionsHibernate.cfg.xml" />
+			</fileset>
+		</copy> -->
+
+		<antcall target="modify_query_tiles-def" />
+
+		<copy todir="${deploy.temp.dir}/${war.dir}/WEB-INF" overwrite="true">
+			<fileset dir=".">
+				<include name="advancequery-struts-config.xml" />
+				<include name="AdvanceQuery-tiles-defs.xml" />
+			</fileset>
+		</copy>
+
+		<!--Copying css files -->
+		<copy todir="${deploy.temp.dir}/${war.dir}/css" overwrite="true">
+			<fileset dir="css" />
+		</copy>
+
+		<!--Copying jss files -->
+		<copy todir="${deploy.temp.dir}/${war.dir}/jss" overwrite="true">
+			<fileset dir="jss" />
+		</copy>
+
+		<!--Copying JSP Pages -->
+		<copy todir="${deploy.temp.dir}/${war.dir}/pages" overwrite="false">
+			<fileset dir="pages" />
+		</copy>
+
+		<!--Copying Images -->
+		<copy todir="${deploy.temp.dir}/${war.dir}/images" overwrite="false">
+			<fileset dir="images" />
+		</copy>
+
+		<!--Copying the  flex client files for advance query-->
+		<copy todir="${deploy.temp.dir}/${war.dir}/flexclient" overwrite="true">
+			<fileset dir="flexclient" />
+		</copy>
+		<copy todir="${deploy.temp.dir}/${war.dir}/WEB-INF/flex" overwrite="true">
+			<fileset dir="flex">
+				<exclude name="remoting-config.xml" />
+			</fileset>
+		</copy>
+		<!-- 3) Inject advancequery-struts-config.xml entry in suite web.xml -->
+		<replace file="${deploy.temp.dir}/${war.dir}/WEB-INF/web.xml">
+			<replacefilter token="/WEB-INF/${suite.struts.config.file}" value="/WEB-INF/${suite.struts.config.file}, /WEB-INF/advancequery-struts-config.xml" />
+		</replace>
+
+		<!-- 4 ) Inject db-util.properties entry in suite db-util.properties -->
+		<replace file="${deploy.temp.dir}/${war.dir}/WEB-INF/classes/dbutil.properties">
+			<replacefilter token="${suite.hibernate.config.file}" value="${suite.hibernate.config.file}, QueryHibernate.cfg.xml" />
+		</replace>
+
+		<!--
+			5) Inject "/WEB-INF/AdvanceQuery-tiles-defs.xml" entry in suite
+			struts-config.xml
+		-->
+		<replace file="${deploy.temp.dir}/${war.dir}/WEB-INF/${suite.struts.config.file}">
+			<replacefilter token="/WEB-INF/${suite.tiles.def.file}" value="/WEB-INF/${suite.tiles.def.file}, /WEB-INF/AdvanceQuery-tiles-defs.xml" />
+		</replace>
+
+		<antcall target="modify_applicationResources.properties" />
+
+		<!--
+			6) Concatenating the AppplicationResource.properties file from
+			AdvanceQuery to Suite AppplicationResource.properties file
+		-->
+		<echo message="Concatenating the Application Resources Properties file" />
+		<concat destfile="${deploy.temp.dir}/${war.dir}/WEB-INF/classes/ApplicationResources.properties" append="true" fixlastline="true">
+			<fileset file="ApplicationResources.properties" />
+		</concat>
+
+
+		<echo message="Advance Query is ready to use." />
+	</target>
+	<!-- Modify Advance Query configuration For MySQL -->
+	<target name="aq_mysql_config">
+		<replace file="QueryHibernate.cfg.xml">
+			<replacefilter token="${mysql.dialect.string}" value="${mysql.dialect.string}" />
+			<replacefilter token="@@dataSource@@" value="${datasource}" />
+		</replace>
+
+		<!-- Modifying the data source for DynamicExtensionsHibernate.cfg.xml-->
+		<echo message="${datasource}" />
+		<echo message="${mysql.dialect.string}" />
+
+		<replace file="DynamicExtensionsHibernate.cfg.xml">
+			<replacefilter token="${mysql.dialect.string}" value="${mysql.dialect.string}" />
+			<replacefilter token="@@dataSource@@" value="${datasource}" />
+		</replace>
+	</target>
+
+	<!-- Modify Advance Query configuration For ORACLE -->
+	<target name="aq_oracle_config">
+		<replace file="QueryHibernate.cfg.xml">
+			<replacefilter token="${mysql.dialect.string}" value="${oracle.dialect.string}" />
+			<replacefilter token="@@dataSource@@" value="${datasource}" />
+		</replace>
+
+		<!-- Modifying the data source for DynamicExtensionsHibernate.cfg.xml-->
+		<replace file="DynamicExtensionsHibernate.cfg.xml">
+			<replacefilter token="${mysql.dialect.string}" value="${oracle.dialect.string}" />
+			<replacefilter token="@@dataSource@@" value="${datasource}" />
+		</replace>
+	</target>
+
+	<!-- Modify Advance Query configuration For ORACLE -->
+	<target name="aq_db2_config">
+		<replace file="QueryHibernate.cfg.xml">
+			<replacefilter token="${mysql.dialect.string}" value="${db2.dialect.string}" />
+			<replacefilter token="@@dataSource@@" value="${datasource}" />
+		</replace>
+
+		<!-- Modifying the data source for DynamicExtensionsHibernate.cfg.xml-->
+		<replace file="DynamicExtensionsHibernate.cfg.xml">
+			<replacefilter token="${mysql.dialect.string}" value="${db2.dialect.string}" />
+			<replacefilter token="@@dataSource@@" value="${datasource}" />
+		</replace>
+	</target>
+
+	<target name="modify_query_tiles-def">
+		<!--Replacing tokens in tiles-def -->
+		<copy file="${deploy.temp.dir}/${war.dir}/WEB-INF/classes/AdvanceQuery.properties" todir="${deploy.temp.dir}/AdvanceQuery" overwrite="true" />
+		<property file="${deploy.temp.dir}/AdvanceQuery/AdvanceQuery.properties">
+		</property>
+		<replace dir="${deploy.temp.dir}/AdvanceQuery/" propertyfile="AdvanceQuery.properties">
+			<include name="AdvanceQuery-tiles-defs.xml" />
+			<replacefilter token="@@tilesTitle@@" value="${tilesTitle}" />
+			<replacefilter token="@@tilesHeader@@" value="${tilesHeader}" />
+			<replacefilter token="@@tilesAppHeader@@" value="${tilesAppHeader}" />
+			<replacefilter token="@@tilesCommonMenu@@" value="${tilesCommonMenu}" />
+			<replacefilter token="@@tilesSubMenu@@" value="${tilesSubMenu}" />
+			<replacefilter token="@@tilesMainMenu@@" value="${tilesMainMenu}" />
+			<replacefilter token="@@tilesContent@@" value="${tilesContent}" />
+			<replacefilter token="@@tilesAppFooter@@" value="${tilesAppFooter}" />
+			<replacefilter token="@@tilesFooter@@" value="${tilesFooter}" />
+			<replacefilter token="@@tilesHeaderLogin@@" value="${tilesHeader}" />
+			<replacefilter token="@@tilesAppHeaderLogin@@" value="${tilesAppHeader}" />
+			<replacefilter token="@@layoutPage@@" value="${layoutPage}" />
+			<replacefilter token="@@tilesMainMenuHomeLogo@@" value="${tilesMainMenu}" />
+			<replacefilter token="@@searchSubmenu@@" value="${searchSubmenu}" />
+			<replacefilter token="@@searchMainmenu@@" value="${searchMainmenu}" />
+		</replace>
+		<echo message="${tilesTitle}" />
+	</target>
+
+	<target name="modify_query_hibernate_cfg">
+		<!--Replacing tokens in QueryHibernate.cfg.xml-->
+		<copy file="${deploy.temp.dir}/${war.dir}/WEB-INF/classes/queryHibernateCfg.properties" todir="${deploy.temp.dir}/AdvanceQuery" overwrite="true" />
+		<property file="${deploy.temp.dir}/AdvanceQuery/queryHibernateCfg.properties">
+		</property>
+		<replace dir="${deploy.temp.dir}/AdvanceQuery/" propertyfile="queryHibernateCfg.properties">
+			<include name="QueryHibernate.cfg.xml" />
+			<replacefilter token="@@abstractCategorialAttribute@@" value="${abstractCategorialAttribute}" />
+			<replacefilter token="@@abstractCategorialClass@@" value="${abstractCategorialClass}" />
+			<replacefilter token="@@abstractCategory@@" value="${abstractCategory}" />
+			<replacefilter token="@@baseExpression@@" value="${baseExpression}" />
+			<replacefilter token="@@condition@@" value="${condition}" />
+			<replacefilter token="@@connector@@" value="${connector}" />
+			<replacefilter token="@@constraints@@" value="${constraints}" />
+			<replacefilter token="@@expression@@" value="${expression}" />
+			<replacefilter token="@@expressionOperand@@" value="${expressionOperand}" />
+			<replacefilter token="@@iOperand@@" value="${iOperand}" />
+			<replacefilter token="@@joinGraph@@" value="${joinGraph}" />
+			<replacefilter token="@@modelAssociation@@" value="${modelAssociation}" />
+			<replacefilter token="@@outputAttribute@@" value="${outputAttribute}" />
+			<replacefilter token="@@query@@" value="${query}" />
+			<replacefilter token="@@queryEntity@@" value="${queryEntity}" />
+			<replacefilter token="@@queryHQL@@" value="${queryHQL}" />
+			<replacefilter token="@@term@@" value="${term}" />
+			<replacefilter token="@@arithmeticOperand@@" value="${arithmeticOperand}" />
+			<replacefilter token="@@customFormula@@" value="${customFormula}" />
+			<replacefilter token="@@outputTerm@@" value="${outputTerm}" />
+			<replacefilter token="@@persistentGraph@@" value="${persistentGraph}" />
+			<replacefilter token="@@parameter@@" value="${parameter}" />
+		</replace>
+	</target>
+
+	<target name="modify_applicationResources.properties">
+		<property file="${deploy.temp.dir}/AdvanceQuery/AdvanceQuery.properties">
+		</property>
+		<replace dir="${deploy.temp.dir}/AdvanceQuery/" propertyfile="AdvanceQuery.properties">
+			<include name="ApplicationResources.properties" />
+			<replacefilter token="@@app.name@@" value="${app.name}" />
+			<replacefilter token="@@useFeature.addToList@@" value="${useFeature.addToList}" />
+			<replacefilter token="@@useFeature.exportTermsAndConditions@@" value="${useFeature.exportTermsAndConditions}" />
+		</replace>
+		<echo message="${app.name}" />
+	</target>
+
+	<target name="insertPaths">
+		<echo message="Inserting paths for the model from given input file" />
+		<java classname="edu.wustl.query.querysuite.metadata.InsertPaths">
+			<arg value="${parent.base.dir}/paths.txt" />
+			<classpath>
+				<pathelement location="${deploy.temp.dir}/${war.dir}/WEB-INF/classes" />
+				<fileset dir="${deploy.temp.dir}/${war.dir}/WEB-INF/lib">
+					<include name="*.jar" />
+					<exclude name="IdPJar.jar" />
+				</fileset>
+				<fileset dir="${lib.dir}">
+					<include name="*.jar" />
+				</fileset>
+			</classpath>
+		</java>
+	</target>
+
+	<target name="create_query_tables">
+		<echo message="In create tables" />
+		<if>
+			<equals arg1="mysql" arg2="${database.type}" />
+			<then>
+				<sql driver="${database.driver}" url="${database.url}" userid="${database.username}" password="${database.password}" onerror="continue">
+					<transaction src="${mysql.sql.dir}/query_schema_script.sql" />
+					<transaction>commit;</transaction>
+					<classpath>
+						<fileset dir="${lib.dir}">
+							<include name="*.jar" />
+						</fileset>
+					</classpath>
+				</sql>
+			</then>
+			<elseif>
+				<equals arg1="oracle" arg2="${database.type}" />
+				<then>
+					<sql driver="${database.driver}" url="${database.url}" userid="${database.username}" password="${database.password}" onerror="continue" rdbms="${rdbms}">
+						<transaction src="${oracle.sql.dir}/query_schema_script.sql" />
+						<transaction>commit;</transaction>
+						<classpath>
+							<fileset dir="${lib.dir}">
+								<include name="*.jar" />
+							</fileset>
+						</classpath>
+					</sql>
+				</then>
+			</elseif>
+			<elseif>
+				<equals arg1="mssqlserver" arg2="${database.type}" />
+				<then>
+					<sql driver="${database.driver}" url="${database.url}" userid="${database.username}" password="${database.password}" onerror="continue" rdbms="${rdbms}">
+						<transaction src="${msSqlServer.sql.dir}/query_schema_script.sql" />
+						<transaction>commit;</transaction>
+						<classpath>
+							<fileset dir="${lib.dir}">
+								<include name="*.jar" />
+							</fileset>
+						</classpath>
+					</sql>
+				</then>
+			</elseif>
+			<else>
+				<echo message="DATABASE INITIALIZATION FAILED PLEASE CHECK DATABASE.TYPE PROPERTY" level="error" />
+			</else>
+		</if>
+	</target>
+
+	<!-- Common fresh deployment target(deploy_db) for Advanced Query-->
+	<target name="aq_deploy_db">
+			<echo message="datatype echo: ${database.type}" />
+			<!-- Creating qdvanced query tables -->
+			<antcall target="create_query_tables"/>
+		</target>
+
+		<!--Common upgrade target for Advanced Query -->
+		<target name="aq_upgrade">
+			<antcall target="aq_upgrade_db_from_1.3_to_1.4"/>
+		</target>
+		<target name="aq_upgrade_db_from_1.3_to_1.4">
+				<echo message=" upgrading adv query db schema : datatype echo: ${database.type}" />
+				<!--Deploying Advance Query db -->
+				<ant dir="." inheritAll="false" antfile="deploy.xml" target="aq_upgrade_db_from_1.3_to_1.4">
+					<property name="database.type" value="${database.type}" />
+					<property name="database.host" value="${database.host}" />
+					<property name="database.port" value="${database.port}" />
+					<property name="database.name" value="${database.name}" />
+					<property name="database.username" value="${database.username}" />
+					<property name="database.password" value="${database.password}" />
+				</ant>
+		</target>
+						
+		<target name="aq_upgrade_db">
+			<echo message=" upgrading adv query db schema : datatype echo: ${database.type}" />
+			<!-- Deploying Advance Query db -->
+			<ant dir="." inheritAll="false" antfile="deploy.xml" target="upgrade_db">
+				<property name="database.type" value="${database.type}" />
+				<property name="database.host" value="${database.host}" />
+				<property name="database.port" value="${database.port}" />
+				<property name="database.name" value="${database.name}" />
+				<property name="database.username" value="${database.username}" />
+				<property name="database.password" value="${database.password}" />
+			</ant>
+		</target>
+
+		<target name="aq_upgrade_db_from_1.2_to_1.3">
+				<echo message=" upgrading adv query db schema : datatype echo: ${database.type}" />
+				<!--Deploying Advance Query db -->
+				<ant dir="." inheritAll="false" antfile="deploy.xml" target="aq_upgrade_db_from_1.2_to_1.3">
+					<property name="database.type" value="${database.type}" />
+					<property name="database.host" value="${database.host}" />
+					<property name="database.port" value="${database.port}" />
+					<property name="database.name" value="${database.name}" />
+					<property name="database.username" value="${database.username}" />
+					<property name="database.password" value="${database.password}" />
+				</ant>
+		</target>
+		
+		<target name="upgrade_to_plus_30" description="Check for Advance Query 3.0 Module">
+			<echo>Check for Advance Query 3.0 Module</echo>
+				<ant dir="${deploy.temp.dir}/AdvanceQuery" inheritAll="false" antfile="aqupgrade.xml" target="upgrade_to_plus_30">
+					<property name="deploy.temp.dir" value="${deploy.temp.dir}"/>
+					<property name="war.dir" value="catissuecore"/> 
+				</ant>
+		</target>
+	<!--Advance Query Related  End -->
+</project>
