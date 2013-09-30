@@ -135,7 +135,7 @@ final public class QueryModuleSqlUtil {
 			jdbcDao.openSession(queryDetailsObj.getSessionData());
 			AbstractQueryExecutor queryExecutor = Utility.getQueryExecutor();
 			dataList = queryExecutor.getQueryResultList(queryParams)
-					.getResult();
+					.getResult(); 
 			jdbcDao.commit();
 		} finally {
 			jdbcDao.closeSession();

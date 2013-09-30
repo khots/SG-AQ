@@ -37,7 +37,7 @@ public class MysqlQueryExecutor extends AbstractQueryExecutor
 	 * - create statement object by executing SQL query, create scrollable resultset
 	 * - moves the cursor position to the startIndex, depending upon its value. if value of startIndex is -1, it will return all the query results.
 	 * - after getting required number of records, move cursor to last record & get the cursor position index.
-	 * - return the Results.
+	 * -	 return the Results.
 	 * @return The reference to PagenatedResultData object, which will have pagenated data list & total no. of records that query can return.
 	 * @throws DAOException
 	 * @throws SMException
@@ -45,22 +45,31 @@ public class MysqlQueryExecutor extends AbstractQueryExecutor
 	 */
 	protected PagenatedResultData createStatemtentAndExecuteQuery(JDBCDAO jdbcDAO) throws SQLException, SMException, DAOException
 	{
-		String sqlToBeExecuted = query;
+		StringBuilder sqlToBeExecuted = new StringBuilder(query);		
+		String cpSql = checkCPBasedAuthentication(jdbcDAO);		
+		if(cpSql != null && cpSql.isEmpty()){
+			return new PagenatedResultData(new ArrayList(), totalFetchedRecords);
+		} else if(cpSql != null){
+			String[] sql = sqlToBeExecuted.toString().split("where");
+			sqlToBeExecuted = new StringBuilder(sql[0]).append("where").append(" ").
+					append(cpSql).append(sql[1]);
+		}
 		
 		if (getSublistOfResult)
 		{
-			sqlToBeExecuted = new StringBuilder(query).append(" Limit ")
-						.append(startIndex).append(" , ").append(noOfRecords).toString();
+			sqlToBeExecuted.append(" Limit ")
+				.append(startIndex).append(" , ").append(noOfRecords).toString();
 		}
-		resultSet = jdbcDAO.getQueryResultSet(sqlToBeExecuted);		
-		List list = getListFromResultSet(jdbcDAO); // get the result set. 
-		return new PagenatedResultData(list, 0);
+		
+		resultSet = jdbcDAO.getQueryResultSet(sqlToBeExecuted.toString());
+		List list = getListFromResultSet(jdbcDAO); // get the result set.
+		return new PagenatedResultData(list, totalFetchedRecords);
 	}
 
 	@Override
 	public void deleteQueryTempViews(String tempViewName)
 	{
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub	
 		String getViewNamesQuery = " show full tables like '"+tempViewName+"%'";
 		StringBuffer deleteViewQuery = new StringBuffer(" drop view if exists ");
 		try

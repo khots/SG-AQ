@@ -18,10 +18,15 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 
+import edu.common.dynamicextensions.domaininterface.EntityInterface;
 import edu.wustl.common.beans.SessionDataBean;
 import edu.wustl.common.exception.ErrorKey;
 import edu.wustl.common.util.PagenatedResultData;
@@ -32,10 +37,13 @@ import edu.wustl.dao.JDBCDAO;
 import edu.wustl.dao.daofactory.DAOConfigFactory;
 import edu.wustl.dao.daofactory.IDAOFactory;
 import edu.wustl.dao.exception.DAOException;
+import edu.wustl.query.beans.QueryResultObjectDataBean;
 import edu.wustl.query.security.QueryCsmCache;
 import edu.wustl.query.security.QueryCsmCacheManager;
 import edu.wustl.query.util.global.AQConstants;
+import edu.wustl.query.util.global.Variables;
 import edu.wustl.security.exception.SMException;
+import edu.wustl.security.global.Permissions;
 import edu.wustl.security.manager.SecurityManager;
 
 /**
@@ -83,9 +91,9 @@ public abstract class AbstractQueryExecutor
 	 */
 	protected ResultSet resultSet = null;
 	/**
-	 * The SQL to be executed.
+	 * The SQL to be executed.	 
 	 */
-	protected String query;
+	protected String query;	
 	/**
 	 * Holds reference to the SessionDataBean object.
 	 */
@@ -104,11 +112,23 @@ public abstract class AbstractQueryExecutor
 	 * Map of QueryResultObjectData, used for security checks & handle identified data.
 	 */
 	protected Map queryResultObjectDataMap;
+	
+	protected QueryResultObjectDataBean queryResultObjectDataBean;
 	/**
 	 * Start index in the Query Resultset. & no of records to fetch from the query result.
 	 */
 	protected int startIndex, noOfRecords;
-
+	
+	/**
+	 * Required for defined view,To remove the hidden id data of entities from result set.
+	 * 
+	 */
+	protected int actualColumnSize = 0; 
+	
+	protected int noHiddenColumns = 0;
+	
+	protected int totalFetchedRecords = 0; 
+	
 	/**
 	 * Method to get the Query executor instance.
 	 * This will return instance of the query executor object depending upon Variables.databaseName value.
@@ -152,6 +172,7 @@ public abstract class AbstractQueryExecutor
 		this.queryResultObjectDataMap = queryResultObjectDataMap;
 		this.startIndex = startIndex;
 		this.noOfRecords = noOfRecords;
+		this.actualColumnSize = 0;
 		getSublistOfResult = startIndex != -1; // this will be used, when its
 		//required to get sublist of the result set.
 		/**
@@ -169,6 +190,7 @@ public abstract class AbstractQueryExecutor
 		{
 			jdbcDAO = DAOConfigFactory.getInstance().getDAOFactory(appName).getJDBCDAO();
 			jdbcDAO.openSession(null);
+			
 			pagenatedResultData = createStatemtentAndExecuteQuery(jdbcDAO);
 			logger.debug("Query Execution on MySQL Completed...");
 		}
@@ -193,14 +215,18 @@ public abstract class AbstractQueryExecutor
 		}
 		return pagenatedResultData;
 	}
-
+	
+	public PagenatedResultData getQueryResultList(QueryParams queryParams) throws DAOException, SMException
+	{
+		return getQueryResultList(queryParams, 0);
+	}
 	/**
 	 * @param queryParams QueryParams object
 	 * @return pagenatedResultData Pagenated Result Data
 	 * @throws DAOException DAOException
 	 * @throws SMException Security Manager Exception
 	 */
-	public PagenatedResultData getQueryResultList(QueryParams queryParams) throws DAOException, SMException
+	public PagenatedResultData getQueryResultList(QueryParams queryParams, int columnSize) throws DAOException, SMException
 	{
 		query = queryParams.getQuery();
 		sessionDataBean = queryParams.getSessionDataBean();
@@ -209,6 +235,7 @@ public abstract class AbstractQueryExecutor
 		queryResultObjectDataMap = queryParams.getQueryResultObjectDataMap();
 		startIndex = queryParams.getStartIndex();
 		noOfRecords = queryParams.getNoOfRecords();
+		actualColumnSize = columnSize;
 		getSublistOfResult = startIndex != -1; // this will be used, when it required to get sublist of the result set.
 		  //setting noOfRecords = Integer.MAX_VALUE, if All records are expected from result. see getListFromResultSet method
 		if (!getSublistOfResult)
@@ -250,7 +277,6 @@ public abstract class AbstractQueryExecutor
 		}
 		return pagenatedResultData;
 	}
-
 	/**
 	 * This method will create Statement object, execute the query & return the query Results,
 	 *  which will contain the Result list based on start index & page size & total no. of records
@@ -278,11 +304,7 @@ public abstract class AbstractQueryExecutor
 	{
  		ResultSetMetaData metaData = resultSet.getMetaData();
 
-		boolean isLongKeyOfMap = false;
-		if(queryResultObjectDataMap!=null && !queryResultObjectDataMap.isEmpty())
-		{
-			isLongKeyOfMap = isLongKeyOfMap(isLongKeyOfMap);
-		}
+		boolean isLongKeyOfMap = isLongKeyOfMap(false);
 		int columnCount = metaData.getColumnCount();
 
 		/**
@@ -296,66 +318,187 @@ public abstract class AbstractQueryExecutor
 		 * @see edu.wustl.common.dao.queryExecutor.
 		 * AbstractQueryExecutor#putPageNumInSQL(java.lang.String,int,int)
 		 */
-		columnCount = getColumnCount(columnCount,getSublistOfResult);
+		columnCount = getColumnCount(columnCount,  getSublistOfResult);
+		noHiddenColumns = (actualColumnSize > 0) ? columnCount - actualColumnSize: 0;
 		int recordCount = 0;
+		int startIndex = 0;	
 		List list = new ArrayList();
+		Set<String> entityIds = new HashSet<String>();
+		if(isLongKeyOfMap){
+			setQueryResultObjectDataBean();
+		}	
 		QueryCsmCacheManager cacheManager = new QueryCsmCacheManager(jdbcDAO);
 		QueryCsmCache cache = cacheManager.getNewCsmCacheObject();
+ 
 		/**
 		 * noOfRecords will hold value = Integer.MAX_VALUE when All records are expected from result.
 		 */
 		while (resultSet.next() && recordCount < noOfRecords)
 		{
 			List aList = new ArrayList();
-			// Srinath: rewrote to use resultSet getters of correct type.
+			list.add(aList);
 			for (int i = 1; i <= columnCount; i++)
 			{
                 populateListToFilter(metaData, aList, i);
             }
-			if(!isLongKeyOfMap && queryResultObjectDataMap!=null)
+			
+			if(!(isSecureExecute && AQConstants.SWITCH_SECURITY)){
+				aList.subList(0, noHiddenColumns).clear();
+				recordCount++;
+				continue;
+			}
+			
+			if(!isLongKeyOfMap && queryResultObjectDataMap != null)
 			{
 				//Aarti: If query has condition on identified data then check user's permission
 				//on the record's identified data.
 				//If user does not have privilege don't add the record to results list
 				//bug#1413
-				if (AQConstants.SWITCH_SECURITY && hasConditionOnIdentifiedField && isSecureExecute)
+				
+				if (hasConditionOnIdentifiedField)
 				{
-					boolean hasPrivilegeOnIdentifiedData = cacheManager.
-					hasPrivilegeOnIdentifiedDataForSimpleSearch(sessionDataBean,
-							queryResultObjectDataMap,aList, cache);
-					if (!hasPrivilegeOnIdentifiedData)
-					{
+					boolean hasPrivilegeOnIdentifiedData = cacheManager.hasPrivilegeOnIdentifiedDataForSimpleSearch(sessionDataBean,
+							queryResultObjectDataMap, aList, cache);
+					if (!hasPrivilegeOnIdentifiedData){
 						continue;
 					}
 				}
 				//Aarti: Checking object level privileges on each record
-				if (AQConstants.SWITCH_SECURITY && isSecureExecute)
-				{
-					filterDataForSimpleSearch(cacheManager, cache, aList);
+				filterDataForSimpleSearch(cacheManager, cache, aList);
+			} else {
+				if(queryResultObjectDataBean.getMainProtocolIdIndex() == -1 && 
+						queryResultObjectDataBean.getMainEntityIdentifierColumnId() != -1){
+					entityIds.add((String)aList.get(this.queryResultObjectDataBean.getMainEntityIdentifierColumnId()));
 				}
+			
+				if(!list.isEmpty() && ((list.size() % 500) == 0 || resultSet.isLast())){
+					filterDataForAdvancedSearch(cacheManager, cache, list, entityIds, startIndex);
+					startIndex = list.size();
+					entityIds = new HashSet<String>();
+				} 
 			}
-			else
-			{
-				if (AQConstants.SWITCH_SECURITY && hasConditionOnIdentifiedField && isSecureExecute)
-				{
-					boolean hasPrivilegeOnIdentifiedData =cacheManager.hasPrivilegeOnIdentifiedData(sessionDataBean, queryResultObjectDataMap, aList,cache);
-					if (!hasPrivilegeOnIdentifiedData)
-					{
-						continue;
-					}
-				}
-
-				//Aarti: Checking object level privileges on each record
-				if (AQConstants.SWITCH_SECURITY && isSecureExecute)
-				{
-					filterDataForAdvancedSearch(cacheManager, cache, aList);
-				}
-			}
-			list.add(aList);
 			recordCount++;
 		}
+		totalFetchedRecords = recordCount;
 		return list;
 	}
+		
+	private int getEntityIdIndex(EntityInterface entity){
+		if(entity != null){
+			String tableAlias = edu.wustl.query.util.global.Utility.getTableAliasName(entity);
+			int index = query.indexOf(tableAlias);
+			if(index < query.indexOf("from")){
+				String column = query.substring(index, query.indexOf(",", index)).split(" Id")[1];
+				return Integer.parseInt(column);
+			}
+		}
+		return -1;
+	}
+	
+	private void setQueryResultObjectDataBean(){
+		EntityInterface hiddenFieldEntity = null, protocolEntity = null;
+		EntityInterface entity = null;
+		int entityIdIndex = -1; 
+		int protocolIdIndex = -1;
+		
+		for (Object key : queryResultObjectDataMap.keySet())
+		{
+			QueryResultObjectDataBean queryResultObjectDataBean = (QueryResultObjectDataBean) queryResultObjectDataMap.get(key);
+			if(queryResultObjectDataBean.isMainEntity()){
+				if(queryResultObjectDataBean.getMainEntityIdentifierColumnId() != -1 || 
+			    		queryResultObjectDataBean.getMainProtocolIdIndex() != -1){
+					if(entity == null){
+						entity = queryResultObjectDataBean.getEntity();
+						entityIdIndex = queryResultObjectDataBean.getMainEntityIdentifierColumnId() + noHiddenColumns;
+						protocolIdIndex = queryResultObjectDataBean.getMainProtocolIdIndex();
+						protocolIdIndex = (protocolIdIndex == -1)? protocolIdIndex: protocolIdIndex + noHiddenColumns;
+					}
+			    } else if(queryResultObjectDataBean.getEntity().getName().equalsIgnoreCase(Variables.mainProtocolObject)){
+			    	protocolEntity = queryResultObjectDataBean.getEntity();
+			    	int index = getEntityIdIndex(protocolEntity);
+			    	if(index != -1){
+			    		entity = protocolEntity;
+			    		entityIdIndex = index;
+			    		protocolIdIndex = entityIdIndex;
+			    		break;
+			    	}
+			    } else if(Variables.entityCPSqlMap.get(queryResultObjectDataBean.getEntity().getName()) != null){
+			    	hiddenFieldEntity = queryResultObjectDataBean.getEntity();
+			    	int index = getEntityIdIndex(hiddenFieldEntity);
+			    	if(index != -1 && entity == null){
+			    		entity = hiddenFieldEntity;
+			    		entityIdIndex = index;
+			    	}
+			    } 
+			}
+		}
+		
+		this.queryResultObjectDataBean = new QueryResultObjectDataBean();
+		if(entity != null){
+			this.queryResultObjectDataBean.setEntity(entity);
+		}
+		this.queryResultObjectDataBean.setMainEntityIdentifierColumnId(entityIdIndex);			
+		this.queryResultObjectDataBean.setMainProtocolIdIndex(protocolIdIndex);
+	}
+	
+	protected String checkCPBasedAuthentication(JDBCDAO jdbcDAO) throws SMException, DAOException {
+		StringBuilder cpSql = null;
+		boolean isLongKeyOfMap = isLongKeyOfMap(false);
+				
+		if (isLongKeyOfMap && hasConditionOnIdentifiedField && isSecureExecute)
+		{	
+			String entityAlias = null;
+			
+			for (Object key : queryResultObjectDataMap.keySet())
+			{
+				QueryResultObjectDataBean queryResultObjectDataBean = (QueryResultObjectDataBean) queryResultObjectDataMap.get(key);
+				EntityInterface entity = queryResultObjectDataBean.getEntity();
+				
+				if(entity.getName().indexOf("CollectionProtocol") > -1)
+				{
+					entityAlias = edu.wustl.query.util.global.Utility.getTableAliasName(entity);			        
+			        break;
+				}
+			
+			}
+			
+			if(entityAlias != null) 
+			{	
+				cpSql = new StringBuilder("");
+				String inClause = null;
+				List<List<String>> collectionProtocolIds = jdbcDAO.executeQuery("SELECT identifier FROM catissue_collection_protocol");
+				QueryCsmCacheManager queryCsm = new  QueryCsmCacheManager(jdbcDAO);
+				
+				for(List<String> cpId : collectionProtocolIds)
+				{
+					Long id = Long.parseLong(cpId.get(0));
+					if( queryCsm.checkPermission(sessionDataBean, Variables.mainProtocolObject, id, Permissions.REGISTRATION) 
+							|| queryCsm.checkPermission(sessionDataBean, Variables.mainProtocolObject, id, Permissions.PHI))
+					{
+						if(inClause != null){
+							inClause += ", " + id;
+						} else {
+							inClause = " " + id ;
+						}
+					} 
+				}
+								
+				if(inClause != null){
+					int index = query.indexOf(entityAlias);
+					String cpAlias = query.substring(index, query.indexOf(".", index)); 
+					
+					if(cpAlias.indexOf("CATISSUECOLLECTIONPROTOCOL") > -1){
+						cpSql.append(cpAlias).append(".IDENTIFIER IN (").append(inClause).append(") AND "); 
+					} else{
+						cpSql.append(cpAlias).append(".COLLECTION_PROTOCOL_ID IN (").append(inClause).append(") AND ");
+					}
+				}
+			}	
+		}
+		
+		return (cpSql == null)? null: cpSql.toString();
+	}
+	 
 
 	/**
 	 * @param isLongKeyOfMap isLongKeyOfMap
@@ -363,17 +506,18 @@ public abstract class AbstractQueryExecutor
 	 */
 	private boolean isLongKeyOfMap(boolean isLongKeyOfMap)
 	{
-		boolean flag = isLongKeyOfMap;
-		Iterator mapIterator = queryResultObjectDataMap.keySet().iterator();
-		while(mapIterator.hasNext())
-		{
-			if (mapIterator.next() instanceof Long)
+		if(queryResultObjectDataMap != null && !queryResultObjectDataMap.isEmpty()){
+			Iterator mapIterator = queryResultObjectDataMap.keySet().iterator();
+			while(mapIterator.hasNext())
 			{
-				flag = true;
-				break;
+				if (mapIterator.next() instanceof Long)
+				{
+					isLongKeyOfMap = true;
+					break;
+				}
 			}
 		}
-		return flag;
+		return isLongKeyOfMap;
 	}
 
 	/**
@@ -440,13 +584,62 @@ public abstract class AbstractQueryExecutor
 	 * @throws SMException Security Manager Exception
 	 */
 	private void filterDataForAdvancedSearch(QueryCsmCacheManager cacheManager,
-			QueryCsmCache cache, List aList) throws SMException {
-		if (sessionDataBean != null & sessionDataBean.isSecurityRequired())
-		{
-			//Supriya :call filterRow of method of csm cache manager changed
-			//for csm-query performance issue.
-			cacheManager.filterRow(sessionDataBean, queryResultObjectDataMap, aList,cache );
+			QueryCsmCache cache, List dataList, Set<String> mainEntityIds, int startIndex) throws SMException{
+		
+		int entityIdIndex = queryResultObjectDataBean.getMainEntityIdentifierColumnId(); 
+		int mainProtocolIdIndex = queryResultObjectDataBean.getMainProtocolIdIndex(); 
+		 
+		Map<String, List<List<String>>> entityIdVsCpId = new HashMap<String, List<List<String>>>(); 
+		
+		if(entityIdIndex != -1 && mainProtocolIdIndex == -1){
+			List<List<String>> cpIdsList = cacheManager.getCpIdsListForGivenEntityIdList(
+											queryResultObjectDataBean.getEntity().getName(), mainEntityIds);
+			 
+			for(List<String> idList: cpIdsList){
+				if(entityIdVsCpId.containsKey(idList.get(1))){
+					entityIdVsCpId.get(idList.get(1)).add(idList);
+				}else{
+					List<List<String>> cpIds =  new ArrayList<List<String>>();
+					cpIds.add(idList);
+					entityIdVsCpId.put(idList.get(1), cpIds);
+				}
+			}
 		}
+		
+		ListIterator<List<String>> itr = (ListIterator<List<String>>) dataList.listIterator(startIndex);
+		while(itr.hasNext()){
+			List<String> row = itr.next();
+			if(entityIdIndex != -1) {
+				String entityId = row.get(entityIdIndex) ;
+				List<List<String>> cpIdsList = null;
+				if(mainProtocolIdIndex != -1){
+					cpIdsList = cacheManager.getCSIdFromDataList(row, Long.parseLong(entityId), mainProtocolIdIndex);
+				}else {
+					cpIdsList = entityIdVsCpId.get(entityId);
+				}
+				
+				Boolean hasPrivilegeOnID = true;
+				row.subList(0, noHiddenColumns).clear();
+				if(cpIdsList != null){
+					hasPrivilegeOnID = cacheManager.checkForIDPrivilege(sessionDataBean, cache, cpIdsList);
+					long t4 = System.currentTimeMillis();
+					if(!hasPrivilegeOnID){
+						itr.remove(); 
+						continue;
+					}
+					hasPrivilegeOnID = cacheManager.checkHasPrivilegeOnId(sessionDataBean, cache, cpIdsList);
+					
+					if(!hasPrivilegeOnID){
+						Set keySet = queryResultObjectDataMap.keySet();
+						for (Object key : keySet){
+							cacheManager.removeUnauthorizedData(row, true, hasPrivilegeOnID, (QueryResultObjectDataBean)queryResultObjectDataMap.get(key));
+						}	
+					}
+				}
+			}else{
+				row.subList(0, noHiddenColumns).clear();
+			}	
+		}	
 	}
 
 	/**

@@ -66,7 +66,6 @@ import edu.wustl.common.querysuite.utils.TermProcessor;
 import edu.wustl.common.querysuite.utils.TermProcessor.IAttributeAliasProvider;
 import edu.wustl.common.util.Utility;
 import edu.wustl.common.util.global.CommonServiceLocator;
-import edu.wustl.common.util.global.Validator;
 import edu.wustl.common.util.logger.Logger;
 import edu.wustl.dao.JDBCDAO;
 import edu.wustl.dao.daofactory.DAOConfigFactory;
@@ -256,7 +255,7 @@ public class SqlGenerator implements ISqlGenerator
 	 *
 	 * @param query
 	 *            query
-	 * @return clone of the query
+	 * @return clone of the q	uery
 	 */
 	private IQuery cloneQuery(IQuery query)
 	{
@@ -412,7 +411,7 @@ public class SqlGenerator implements ISqlGenerator
 		int currentNestingCounter = 0;
 		// holds current nesting number count i.e. no of opening Braces that
 		// needs to be closed.
-		int noOfRules = expression.numberOfOperands();
+		int noOfRules = expression.numberOfOperands(); 
 		for (int i = 0; i < noOfRules; i++)
 		{
 			IExpressionOperand operand = expression.getOperand(i);
@@ -484,7 +483,7 @@ public class SqlGenerator implements ISqlGenerator
 		String tempSQL = operandSQL;
 		if (!"".equals(operandSQL) && noOfRules != 1)
 		{
-			tempSQL = "(" + operandSQL + ")";
+			tempSQL = " (" + operandSQL + ") ";
 			/*
 			 * putting RuleSQL in Braces so that it will not get mixed with
 			 * other Rules.
@@ -544,10 +543,12 @@ public class SqlGenerator implements ISqlGenerator
 	}
 
 	private boolean isYearInterval(ICustomFormula formula) {
-		ITerm term = formula.getAllRhs().get(0);		
-		DateOffsetLiteral operand = (DateOffsetLiteral)term.getOperand(0);
-		
-		return (operand.getTimeInterval() == TimeInterval.Year);		
+		ITerm term = formula.getAllRhs().get(0);
+		if(term.getOperand(0) instanceof DateOffsetLiteral){
+			DateOffsetLiteral operand = (DateOffsetLiteral)term.getOperand(0);
+			return (operand.getTimeInterval() == TimeInterval.Year);		
+		}
+		return false;
 	}
 
 	/**
@@ -595,7 +596,7 @@ public class SqlGenerator implements ISqlGenerator
 		int currentNestingCounter = nestingCounter;
 		if (currentNestingCounter < nestingNumber)
 		{
-			buffer.append(getParenthesis(nestingNumber - currentNestingCounter, "("));
+			buffer.append(getParenthesis(nestingNumber - currentNestingCounter, " ("));
 			currentNestingCounter = nestingNumber;
 			buffer.append(operandSQL);
 		}
@@ -1156,13 +1157,13 @@ public class SqlGenerator implements ISqlGenerator
 		}
 		else if (dataType instanceof IntegerTypeInformationInterface)
 		{
-			if (!new Validator().isNumeric(tempValue))
+			if (!isNumeric(tempValue))
 			{
 				throw new SqlException("Non numeric value found in value part!!!");
 			}
 		}
 		else if (dataType instanceof DoubleTypeInformationInterface
-				&& !new Validator().isDouble(tempValue))
+				&& !isDouble(tempValue))
 		{
 			throw new SqlException("Non numeric value found in value part!!!");
 		}
@@ -1174,6 +1175,33 @@ public class SqlGenerator implements ISqlGenerator
 		return tempValue;
 	}
 
+	private boolean isNumeric(String numString)
+	{
+		boolean isNumeric = true;
+		try
+		{
+			Long.parseLong(numString);
+		}
+		catch (NumberFormatException exp)
+		{ 
+			isNumeric = false;
+		}
+		return isNumeric;
+	}
+	
+	private boolean isDouble(String dblString)
+	{
+		boolean isDouble = true;
+		try
+		{
+			Double.parseDouble(dblString);
+		}
+		catch (NumberFormatException exp)
+		{
+			isDouble = false;
+		}
+		return isDouble;
+	}
 	/**
 	 * To Modify value for Boolean data type. For Boolean dataType it will
 	 * change value to 1 if its TRUE, else 0.
@@ -1616,7 +1644,7 @@ public class SqlGenerator implements ISqlGenerator
 			if(term.getTimeInterval() == TimeInterval.Year){
 				termString = modifyForTimeIntervalYear(term.getTerm());
 			} else {
-				termString = "(" + getTermString(term.getTerm()) + ")";
+				termString = " (" + getTermString(term.getTerm()) + ")";
 				termString = modifyForTimeInterval(termString, term.getTimeInterval());
 			}
 			String columnName = COLUMN_NAME + selectIndex++;
@@ -1635,7 +1663,7 @@ public class SqlGenerator implements ISqlGenerator
 		} else {
 			operatorStr = " + ";
 		}
-		StringBuilder termString = new StringBuilder("(");
+		StringBuilder termString = new StringBuilder(" (");
 			
 		for(int i = 0; i < term.numberOfOperands(); i++) {
 			IArithmeticOperand opr = term.getOperand(i);

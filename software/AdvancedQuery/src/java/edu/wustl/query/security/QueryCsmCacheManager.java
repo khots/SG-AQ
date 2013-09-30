@@ -76,6 +76,7 @@ public class QueryCsmCacheManager
 	 */
 	private IValidator validator;
 
+	private Map<Long, Boolean> phiAccessMap = null;
 	/**
 	 * Parameterized constructor.
 	 * @param jdbcDAO Instance of JDBCDAO
@@ -84,6 +85,7 @@ public class QueryCsmCacheManager
 	{
 		this.jdbcDAO = jdbcDAO;
 		validator = getValidatorInstance();
+		phiAccessMap = new HashMap<Long, Boolean>();
 	}
 
 	/**
@@ -147,21 +149,18 @@ public class QueryCsmCacheManager
 					List<List<String>> cpIdsList = null;
 					if(mainProtocolIdIndex != -1)
 					{
-						cpIdsList = getCSIdFromDataList(aList,
-								finalMainEntityId,mainProtocolIdIndex);
+						cpIdsList = getCSIdFromDataList(aList, finalMainEntityId, mainProtocolIdIndex);
 					}
 					else
 					{
 						finalMainEntityId = getFinalMainEntityId(
-								queryResultObjectDataBean, mainEntityId,
-								finalMainEntityId);
+								queryResultObjectDataBean, mainEntityId, finalMainEntityId);
 						cpIdsList =
 							getCpIdsListForGivenEntityId(entityName, finalMainEntityId);
 					}
 					//if this object is not associated to any CP
 					//then user will not have identified privilege on it.
-					hasPrivilegeOnID = checkHasPrivilegeOnId(sessionDataBean,
-							cache, cpIdsList);
+					//hasPrivilegeOnID = checkHasPrivilegeOnId(sessionDataBean, cache, cpIdsList);
 				}
 				removeUnauthorizedData(aList, isAuthorisedUser,
 						hasPrivilegeOnID,queryResultObjectDataBean);
@@ -201,7 +200,7 @@ public class QueryCsmCacheManager
 	 * <CODE>false</CODE> otherwise
 	 * @throws SMException Security Manager Exception
 	 */
-	private Boolean checkHasPrivilegeOnId(SessionDataBean sessionDataBean,
+	public Boolean checkHasPrivilegeOnId(SessionDataBean sessionDataBean,
 			QueryCsmCache cache, List<List<String>> cpIdsList)
 			throws SMException
 	{
@@ -217,11 +216,17 @@ public class QueryCsmCacheManager
 			for (int i = 0; i < cpIdsList.size(); i++)
 			{
 				List<String> cpIdList = cpIdsList.get(i);
-				updatePrivilegeList(sessionDataBean, cache,
-				null,iPrivilegeList, cpIdList);
+				Long cpId = cpIdList.get(0) != null ? Long.parseLong(cpIdList.get(0)) : -1;
+				Boolean isAllowed = phiAccessMap.get(cpId);
+				if (isAllowed == null) {
+					isAllowed = checkPermission(sessionDataBean, Variables.mainProtocolObject, cpId, Permissions.PHI);
+					phiAccessMap.put(cpId, isAllowed);
+						
+				} 
+				
+				iPrivilegeList.add(isAllowed);				
 			}
-			hasPrivilegeOnID = isAuthorizedUser(iPrivilegeList,
-					false);
+			hasPrivilegeOnID = isAuthorizedUser(iPrivilegeList, false);
 		}
 		return hasPrivilegeOnID;
 	}
@@ -238,8 +243,8 @@ public class QueryCsmCacheManager
 	{
 		long tempMainEntityId = finalMainEntityId;
 		if(queryResultObjectDataBean.getMainEntity() != null &&
-		!queryResultObjectDataBean.getEntity().equals
-		(queryResultObjectDataBean.getMainEntity()))
+				!queryResultObjectDataBean.getEntity().equals
+				(queryResultObjectDataBean.getMainEntity()))
 		{
 			tempMainEntityId = getMainEntityId(queryResultObjectDataBean,
 					mainEntityId, finalMainEntityId);
@@ -282,12 +287,12 @@ public class QueryCsmCacheManager
 		    	   entityId = getMainEntityIdForDE(queryResultObjectDataBean,
 					mainEntityId, finalMainEntityId, hibernateDAO, mainProtObjFile);
 		       }
-		       else
+		       else	
 		       {
 		    	   sql = sql + mainEntityId;
-		    	   List<ColumnValueBean> columnValueBean = new LinkedList<ColumnValueBean>();
+		    	  /* List<ColumnValueBean> columnValueBean = new LinkedList<ColumnValueBean>();
 		    	   ColumnValueBean bean = new ColumnValueBean("mainEntityId",Integer.valueOf(mainEntityId));
-		    	   columnValueBean.add(bean);
+		    	   columnValueBean.add(bean);*/
 		    	   List<Long> allMainObjectIds = hibernateDAO.executeQuery(sql);
 		    	   if(!allMainObjectIds.isEmpty() && allMainObjectIds.get(0) != null)
 		    	   {
@@ -582,7 +587,7 @@ public class QueryCsmCacheManager
 	 * @param hasPrivilegeOnID to specify if the user has privilege to view identified data
 	 * @param queryResultObjectDataBean Object of QueryResultObjectDataBean
 	 */
-	private void removeUnauthorizedData(List aList, Boolean isAuthorisedUser,
+	public void removeUnauthorizedData(List aList, Boolean isAuthorisedUser,
 			Boolean hasPrivilegeOnID,QueryResultObjectDataBean queryResultObjectDataBean)
 	{
 		if (isAuthorisedUser)
@@ -600,6 +605,8 @@ public class QueryCsmCacheManager
 		}
 	}
 
+	
+	
 	/**
 	 * Checks if the user has privilege on identified data.
 	 * @param sessionDataBean SessionDataBean object
@@ -639,6 +646,7 @@ public class QueryCsmCacheManager
 					//then user will not have identified privilege on it.
 					hasPrivilegeOnIdentifiedData = checkForIDPrivilege(
 							sessionDataBean, cache, cpIdsList);
+					break;	
 				}
 			}
 		}
@@ -653,7 +661,7 @@ public class QueryCsmCacheManager
 	 * <CODE>false</CODE> otherwise
 	 * @throws SMException Security manager exception
 	 */
-	private Boolean checkForIDPrivilege(SessionDataBean sessionDataBean,
+	public Boolean checkForIDPrivilege(SessionDataBean sessionDataBean,
 			QueryCsmCache cache, List<List<String>> cpIdsList)
 			throws SMException
 	{
@@ -668,11 +676,9 @@ public class QueryCsmCacheManager
 			for (int i = 0; i < cpIdsList.size(); i++)
 			{
 				List<String> cpIdList = cpIdsList.get(i);
-				updatePrivilegeList(sessionDataBean, cache, null,
-						identifiedPrivilegeList, cpIdList);
+				updatePrivilegeList(sessionDataBean, cache, null, identifiedPrivilegeList, cpIdList);
 			}
-			hasPrivilegeOnIdentifiedData =
-			isAuthorizedUser(identifiedPrivilegeList,false);
+			hasPrivilegeOnIdentifiedData = isAuthorizedUser(identifiedPrivilegeList, false);
 		}
 		return hasPrivilegeOnIdentifiedData;
 	}
@@ -939,14 +945,8 @@ public class QueryCsmCacheManager
 				return true;
 			}
 		}
-		if(isReadDenied)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		
+		return isReadDenied;
 	}
 
 	/**
@@ -1051,6 +1051,37 @@ public class QueryCsmCacheManager
 		}
 		return cpIdsList;
 	}
+	
+	public List<List<String>> getCpIdsListForGivenEntityIdList(String entityName, Set<String> entityIds)
+	{
+		String sql = Variables.entityCPSqlMap.get(entityName);
+		List<List<String>> cpIdsList = new ArrayList<List<String>>();
+		if (sql != null)
+		{
+			StringBuilder inClause = null;
+			for(String entityId : entityIds)
+			{				
+				if(inClause == null){
+					inClause = new StringBuilder(" " + entityId);
+				} else {
+					inClause.append(", ").append(entityId) ;
+				}
+			} 
+			
+			long t1 = System.currentTimeMillis();
+			sql = sql.substring(0, sql.lastIndexOf("=")) + " in ( "+ inClause+ " )";			
+			try
+			{
+				cpIdsList = executeQuery(sql, null);
+			}
+			catch (Exception e)
+			{
+				Logger.out.error("Error occured while getting CP ids for entity : " + entityName);
+				e.printStackTrace();
+			}
+		}
+		return cpIdsList;
+	}
 
 	/**
 	 * @param entityName entity name
@@ -1085,7 +1116,7 @@ public class QueryCsmCacheManager
 	 * @return <CODE>true</CODE> If the user is authorized,
 	  * <CODE>false</CODE> otherwise
 	 */
-	private Boolean checkPermission(SessionDataBean sessionDataBean, String entityName,
+	public Boolean checkPermission(SessionDataBean sessionDataBean, String entityName,
 			Long entityId, String permission) throws SMException
 	{
 		// To get privilegeCache through
@@ -1232,13 +1263,11 @@ public class QueryCsmCacheManager
 		boolean isAuthorizedUser = true;
 		if (removeOnlyIdentifiedData)
 		{
-			objectColumnIds.addAll(queryResultObjectDataBean
-					.getIdentifiedDataColumnIds());
+			objectColumnIds.addAll(queryResultObjectDataBean.getIdentifiedDataColumnIds());
 		}
 		else
 		{
-			objectColumnIds.addAll(queryResultObjectDataBean
-					.getObjectColumnIds());
+			objectColumnIds.addAll(queryResultObjectDataBean.getObjectColumnIds());
 			isAuthorizedUser = false;
 		}
 		if (objectColumnIds != null)
@@ -1253,7 +1282,7 @@ public class QueryCsmCacheManager
 		List tqColumnMetadataList = queryResultObjectDataBean
 		.getTqColumnMetadataList();
 		QueryCSMValidator queryCSMValidator = new QueryCSMValidator();
-		queryCSMValidator.hasPrivilegeToViewTemporalColumn(tqColumnMetadataList, aList, isAuthorizedUser);
+		//queryCSMValidator.hasPrivilegeToViewTemporalColumn(tqColumnMetadataList, aList, isAuthorizedUser);
 	}
 	/**
 	 * This method is called from CacoreAppServiceDelegator.
@@ -1306,8 +1335,7 @@ public class QueryCsmCacheManager
 	 * @param finalMainEntityId
 	 * @return
 	 */
-	private List<List<String>> getCSIdFromDataList(List aList,
-			long finalMainEntityId,int cpIdIndex) {
+	public List<List<String>> getCSIdFromDataList(List aList, long finalMainEntityId,int cpIdIndex) {
 		List<List<String>> cpIdsList = new ArrayList<List<String>>();
 		String cpId = (String)aList.get(cpIdIndex);
 		List<String> cpIdList = new ArrayList<String>();

@@ -37,6 +37,7 @@ public class QueryDetails
 	private LinkedList<ColumnValueBean> columnValueBean;
 	private String saveGenratedQuery;
 	private Map<String, String> columnNameVsAliasMap;
+	private int columnSize = 0;
 
 	//private HttpSession session;
 
@@ -250,5 +251,13 @@ public class QueryDetails
 
 	public void setColumnNameVsAliasMap(Map<String, String> columnNameVsAliasMap) {
 		this.columnNameVsAliasMap = columnNameVsAliasMap;
+	}
+
+	public int getColumnSize() {
+		return columnSize;
+	}
+
+	public void setColumnSize(int columnSize) {
+		this.columnSize = columnSize;
 	}
 }

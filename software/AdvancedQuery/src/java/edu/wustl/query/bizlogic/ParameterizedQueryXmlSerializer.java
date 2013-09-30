@@ -43,6 +43,7 @@ import edu.wustl.common.querysuite.queryobject.IExpressionAttribute;
 import edu.wustl.common.querysuite.queryobject.IExpressionOperand;
 import edu.wustl.common.querysuite.queryobject.IJoinGraph;
 import edu.wustl.common.querysuite.queryobject.IOutputAttribute;
+import edu.wustl.common.querysuite.queryobject.IParameter;
 import edu.wustl.common.querysuite.queryobject.IParameterizedQuery;
 import edu.wustl.common.querysuite.queryobject.IQueryEntity;
 import edu.wustl.common.querysuite.queryobject.IRule;
@@ -54,6 +55,7 @@ import edu.wustl.common.querysuite.queryobject.impl.Connector;
 import edu.wustl.common.querysuite.queryobject.impl.Constraints;
 import edu.wustl.common.querysuite.queryobject.impl.CustomFormula;
 import edu.wustl.common.querysuite.queryobject.impl.Expression;
+import edu.wustl.common.querysuite.queryobject.impl.Expression.SubExpression;
 import edu.wustl.common.querysuite.queryobject.impl.JoinGraph;
 import edu.wustl.common.querysuite.queryobject.impl.OutputAttribute;
 import edu.wustl.common.querysuite.queryobject.impl.Parameter;
@@ -163,13 +165,13 @@ public class ParameterizedQueryXmlSerializer implements ParameterizedQuerySerial
 	private void hydrateQuery(IParameterizedQuery query) {
 		hydrateEntities(query);
 		hydrateAttributes(query);
-		hydrateAssociations(query);
+		hydrateAssociations(query); 
 		hydrateOutputAttributes(query);
 	}
 
 	private void hydrateEntities(IParameterizedQuery query) {
-		Set<IQueryEntity> queryEntities = query.getConstraints().getQueryEntities();
-		for(IQueryEntity queryEntity : queryEntities) {
+		Set<IQueryEntity> queryEntities = query.getConstraints().getQueryEntities();	
+		for(IQueryEntity queryEntity : queryEntities) {	
 			if (!(queryEntity instanceof QueryEntity)) {
 				continue;
 			}			
@@ -183,25 +185,39 @@ public class ParameterizedQueryXmlSerializer implements ParameterizedQuerySerial
 		while (exprIter.hasNext()) { // iterating expressions
 			IExpression expr = exprIter.next();
 			Iterator<IExpressionOperand> exprOperandIter = expr.iterator();
-			while (exprOperandIter.hasNext()) { // iterating expression operands
-				IExpressionOperand exprOperand =  exprOperandIter.next();
-				if (exprOperand instanceof IRule) {
-					Iterator<ICondition> exprConditionIter =((IRule)exprOperand).iterator();
-					while (exprConditionIter.hasNext()) {
-						ICondition condition = exprConditionIter.next();
-						AbstractAttributeInterface attr = getHydratedAttribute(condition.getAttribute());
-						condition.setAttribute((AttributeInterface)attr);
-					}
-				} else if (exprOperand instanceof CustomFormula) {
-					List<ITerm> rhsTerms =((CustomFormula)exprOperand).getAllRhs();
-					for (ITerm rhsTerm : rhsTerms) {
-						hydrateTermAttributes(rhsTerm);
-					}
-
-					hydrateTermAttributes(((CustomFormula)exprOperand).getLhs());
+			hydrateAttributes(exprOperandIter);
+		}
+	}
+	
+	private void hydrateAttributes(Iterator<IExpressionOperand> exprOperandIter) {
+		while (exprOperandIter.hasNext()) { // iterating expression operands
+			IExpressionOperand exprOperand =  exprOperandIter.next();
+			if (exprOperand instanceof IRule) {
+				Iterator<ICondition> exprConditionIter =((IRule)exprOperand).iterator();
+				while (exprConditionIter.hasNext()) {
+					ICondition condition = exprConditionIter.next();
+					AbstractAttributeInterface attr = getHydratedAttribute(condition.getAttribute());
+					condition.setAttribute((AttributeInterface)attr);
 				}
+			} else if (exprOperand instanceof CustomFormula) {
+				List<ITerm> rhsTerms =((CustomFormula)exprOperand).getAllRhs();
+				for (ITerm rhsTerm : rhsTerms) {
+					hydrateTermAttributes(rhsTerm);
+				}
+				hydrateTermAttributes(((CustomFormula)exprOperand).getLhs());
+			} else if (exprOperand instanceof SubExpression){
+				Expression expr = (Expression) ((SubExpression)exprOperand).getWrappedExpr();
+				hydrateExpression(expr);
 			}
 		}
+	}
+	
+	private void hydrateExpression(Expression expr){
+		 IQueryEntity queryEntity =  expr.getQueryEntity();
+		 EntityInterface entity = getHydratedEntity(queryEntity.getDynamicExtensionsEntity());
+		 ((QueryEntity)queryEntity).setDynamicExtensionsEntity(entity);
+			
+		 hydrateAttributes(expr.iterator());
 	}
 
 	private void hydrateAssociations(IParameterizedQuery query) {
@@ -234,6 +250,8 @@ public class ParameterizedQueryXmlSerializer implements ParameterizedQuerySerial
 			if(outputAttribute instanceof OutputAttribute) {
 				AbstractAttributeInterface attr = getHydratedAttribute(outputAttribute.getAttribute());
 				((OutputAttribute)outputAttribute).setAttribute((AttributeInterface) attr);
+				
+				hydrateExpression((Expression) outputAttribute.getExpression());
 			}
 		}
 	}

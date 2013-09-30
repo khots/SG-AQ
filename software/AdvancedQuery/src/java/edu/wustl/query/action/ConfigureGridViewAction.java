@@ -22,6 +22,7 @@ import edu.wustl.common.querysuite.queryobject.IOutputAttribute;
 import edu.wustl.common.querysuite.queryobject.IOutputTerm;
 import edu.wustl.common.querysuite.queryobject.IQuery;
 import edu.wustl.common.util.global.QuerySessionData;
+import edu.wustl.common.util.logger.Logger;
 import edu.wustl.query.actionForm.CategorySearchForm;
 import edu.wustl.query.beans.QueryResultObjectDataBean;
 import edu.wustl.query.bizlogic.DefineGridViewBizLogic;
@@ -93,6 +94,9 @@ public class ConfigureGridViewAction extends SecureAction
 			selectedCNVBList = selectedColumnsMetadata.getSelColNVBeanList();
 			categorySearchForm.setSelColNVBeanList(selectedCNVBList);
 			definedColumnsList = (List<String>)session.getAttribute(AQConstants.SPREADSHEET_COLUMN_LIST);
+			if(selectedColumnsMetadata.isDefinedView()){
+				queryDetailsObj.setColumnSize(definedColumnsList.size());
+			}
 			spreadSheetDataMap.put(AQConstants.SPREADSHEET_COLUMN_LIST, definedColumnsList);
 			querySessionData = queryOutputSpreadsheetBizLogic.getQuerySessionData(queryDetailsObj,
 					fetchRecordSize, 0, spreadSheetDataMap, sql, queryResultObjecctDataMap,
@@ -117,6 +121,7 @@ public class ConfigureGridViewAction extends SecureAction
 					queryResultObjecctDataMap, queryDetailsObj, outputTermsColumns, nodeData, specimenMap);
 			spreadSheetDataMap.put(AQConstants.SPREADSHEET_COLUMN_LIST, definedColumnsList);
 			String sqlForSelectedColumns = defineGridViewBizLogic.createSQLForSelectedColumn(selectedColumnNames.toString(), sql);
+			
 			querySessionData = queryOutputSpreadsheetBizLogic.getQuerySessionData(queryDetailsObj,
 					fetchRecordSize, 0, spreadSheetDataMap, sqlForSelectedColumns,
 					queryResultObjecctDataMap, hasConditionOnIdentifiedData, selectedColumnsMetadata);

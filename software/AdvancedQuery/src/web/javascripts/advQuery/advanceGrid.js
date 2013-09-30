@@ -105,8 +105,14 @@ function initQueryGrid() {
 	gridBOxTag.style.width = (gridBOxTag.offsetWidth - 6 ) + "px"
 	if(mygrid.getRowsNum() == fetchRecordSize){
 		document.getElementById("messageDiv").style.display = "block";
+		document.getElementById("messageDiv").style.color = "blue";
 		document.getElementById("messageDiv").textContent = "Showing the top "+fetchRecordSize+" rows. Click on Export button to view all the rows.";
 		document.getElementById("messageDiv").innerText ="Showing the top "+fetchRecordSize+" rows. Click on Export button to view all the rows.";
+	} else if(mygrid.getRowsNum() == 0){
+		document.getElementById("messageDiv").style.display = "block";
+		document.getElementById("messageDiv").style.color = "red";
+		document.getElementById("messageDiv").textContent = "Zero records found for defined condition, Click on Export button to view all the records.";
+		document.getElementById("messageDiv").innerText = "Zero records found for defined condition, Click on Export button to view all the records.";	
 	}
 }
 

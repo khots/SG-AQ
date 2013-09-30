@@ -1,4 +1,4 @@
-
+	
 package edu.wustl.query.util.global;
 
 import java.io.File;
@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
@@ -89,6 +90,7 @@ public class Utility //extends edu.wustl.common.util.Utility
 
 		return object;
 	}
+ 
 	/**
 	 * Executes SQL through JDBC and returns the list of records.
 	 * @param sql SQL to be fired
@@ -365,8 +367,10 @@ public class Utility //extends edu.wustl.common.util.Utility
 		recordsPerPage = startIndex+ recordsPerPage;
 		CommonQueryBizLogic qBizLogic = new CommonQueryBizLogic();
 
+		List<String> columnsList = (List<String>) request.getSession()
+								.getAttribute(AQConstants.SPREADSHEET_COLUMN_LIST);
 		PagenatedResultData pagenatedResult = qBizLogic.execute(sessionData, querySessionData,
-				startIndex);
+				startIndex, columnsList.size());
 		paginationDataList = pagenatedResult.getResult();
 		String isSimpleSearch = (String) request.getSession().getAttribute(
 				AQConstants.IS_SIMPLE_SEARCH);
@@ -431,7 +435,7 @@ public class Utility //extends edu.wustl.common.util.Utility
 			columnLabels.add(0, "");
 			
 			Map gridData = new HashMap();
-			gridData.put("total_count", totalResult);
+			gridData.put("total_count", 0);
 			gridData.put("pos", pos);
 			gridData.put("rows", getGridData(dataList, pos));			
 			
@@ -567,7 +571,9 @@ public class Utility //extends edu.wustl.common.util.Utility
 	private static JSONArray getGridData(List dataList, Integer pos)
 	{		
 		JSONArray rows = new JSONArray();
-		
+		if(dataList == null){
+			return rows;
+		}
 		for (int i = 0; i < dataList.size(); i++){ 
 			List row = (List)dataList.get(i);
 			
@@ -842,7 +848,7 @@ public class Utility //extends edu.wustl.common.util.Utility
 	            for (ICondition condition : conditions)
 	            {
 	                Boolean isCondnOnIdAttr = condition.getAttribute().getIsIdentified();
-
+	                
 	                if (Boolean.TRUE.equals(isCondnOnIdAttr))
 	                {
 	                	isCondnOnIdField = true;
@@ -1074,5 +1080,32 @@ public class Utility //extends edu.wustl.common.util.Utility
 			}
 		}
 		return columnsVsAlias;
+    }
+    
+    public static String generateHiddenIds(Set<String>tableAliasNames, String columnsInSql)
+    {
+    	StringBuffer hiddenIdColumns = new StringBuffer();
+    	if(tableAliasNames != null || ! tableAliasNames.isEmpty()){
+    		int index = 0;
+    		for (String tableAliasName : tableAliasNames){
+    			String value = tableAliasName+".IDENTIFIER";
+    			if(columnsInSql.indexOf(value) < 0){
+    				hiddenIdColumns.append(value+" "+"Id"+index+", ");
+    				index++;
+    			}
+    		}
+    	}
+    	return hiddenIdColumns.toString();
+    }
+    
+    public static String getTableAliasName(EntityInterface entity){
+    	String tableName = entity.getTableProperties().getName();
+		String entityAlias = edu.wustl.common.util.Utility.removeSpecialCharactersFromString(tableName);
+        if (entityAlias.length() > 26)
+        {
+        	entityAlias = entityAlias.substring(0, 26);
+        }
+        
+        return entityAlias;
     }
 }

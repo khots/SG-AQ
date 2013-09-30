@@ -94,7 +94,7 @@
 				%>
 					<tr><td><bean:message key="advanceQuery.noRecordsFound" /></td></tr>					
 				<%
-					} else if (dataList != null && dataList.size() != 0) {
+					} else {
 												
 						if (pageOf.equals(AQConstants.PAGEOF_QUERY_RESULTS)) {
 								String[] selectedColumns = form.getSelectedColumnNames();

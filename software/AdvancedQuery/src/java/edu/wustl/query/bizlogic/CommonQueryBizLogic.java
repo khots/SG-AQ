@@ -7,8 +7,12 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+
+import javax.servlet.http.HttpSession;
 
 import oracle.sql.CLOB;
 import edu.wustl.common.beans.SessionDataBean;
@@ -24,8 +28,10 @@ import edu.wustl.dao.daofactory.IDAOFactory;
 import edu.wustl.dao.exception.DAOException;
 import edu.wustl.dao.query.generator.ColumnValueBean;
 import edu.wustl.query.executor.AbstractQueryExecutor;
+import edu.wustl.query.security.QueryCsmCacheManager;
 import edu.wustl.query.util.global.Utility;
 import edu.wustl.security.exception.SMException;
+import edu.wustl.security.global.Permissions;
 
 /**
  * This class contains the methods required in Simple Query and Advanced Query.
@@ -44,7 +50,7 @@ public class CommonQueryBizLogic
 			+ "qpq.status = 'ACTIVE' AND "
 			+ "qti.tag_id = ? "
 			+ "ORDER BY qti.identifier DESC";				 
-						         
+	
 	/**
 	 * Method to execute the given SQL to get the query result.
 	 * @param sessionDataBean reference to SessionDataBean object
@@ -54,7 +60,7 @@ public class CommonQueryBizLogic
 	 * @throws DAOException generic DAOException.
 	 */
 	public PagenatedResultData execute(SessionDataBean sessionDataBean,
-			QuerySessionData querySessionData, int startIndex) throws DAOException
+			QuerySessionData querySessionData, int startIndex, int columnSize) throws DAOException
 	{
 		IDAOFactory daofactory = DAOConfigFactory.getInstance().getDAOFactory();
 		JDBCDAO dao = daofactory.getJDBCDAO();
@@ -72,7 +78,7 @@ public class CommonQueryBizLogic
 			queryParams.setStartIndex(startIndex);
 			queryParams.setNoOfRecords(querySessionData.getRecordsPerPage());
 			AbstractQueryExecutor queryExecutor = Utility.getQueryExecutor();
-			edu.wustl.common.util.PagenatedResultData pagenatedResultData = queryExecutor.getQueryResultList(queryParams);
+			edu.wustl.common.util.PagenatedResultData pagenatedResultData = queryExecutor.getQueryResultList(queryParams, columnSize);
 			
 			querySessionData.setTotalNumberOfRecords(pagenatedResultData.getTotalRecords());
 			
@@ -412,5 +418,5 @@ public class CommonQueryBizLogic
 		{
 			jdbcDAO.closeSession();
 		}		
-	}	 
+	}
 }

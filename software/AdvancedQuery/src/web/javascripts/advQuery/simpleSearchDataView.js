@@ -73,17 +73,21 @@ function displayValidationMessage(message)
 }
 	
 function onExport() {
-	//var isChecked = updateHiddenFields();	
-	checkRowStatus();
-	var jsonData;
+	//var isChecked = updateHiddenFields();		
 	var isCheckAllAcrossAllChecked = false
-	if(checkedRowIds.length == 0){
+	if(mygrid.getRowsNum() == 0){		
 		isCheckAllAcrossAllChecked = true;
-	}else{
-		jsonData = getJsonfromGridData();
-	}	
- 
-	document.getElementById('jsonData').value = jsonData;
+	} else {	
+		checkRowStatus();	
+		var jsonData;		
+		if(checkedRowIds.length == 0){
+			isCheckAllAcrossAllChecked = true;		
+		}else{	
+			jsonData = getJsonfromGridData();	
+		}	
+		document.getElementById('jsonData').value = jsonData;
+	}	
+
 	var action = "SpreadsheetExport.do?pageNum="+mygrid.currentPage+"&isCheckAllAcrossAllChecked="+isCheckAllAcrossAllChecked;
 	document.forms[0].operation.value="export";
 	document.forms[0].action = action;
@@ -94,6 +98,7 @@ function onExport() {
 		window.setTimeout(unCheckGridRows, 500);
 	}
 }
+
 
 function getJsonfromGridData(){
 	var jsonData;	

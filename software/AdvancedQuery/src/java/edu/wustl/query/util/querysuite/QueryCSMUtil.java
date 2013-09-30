@@ -951,12 +951,13 @@ public class QueryCSMUtil
 		String selectSql = tempSql;
 		int columnIndex = colIndex;
 		List<String> selectSqlColumnList = getListOfSelectedColumns(selectSql);
+		Map<String, String> columnNameVsAliasMap = queryDetailsObj.getColumnNameVsAliasMap();
 		if (defineViewNodeList == null)
 		{
 			OutputTreeDataNode outputTreeDataNode = getMatchingEntityNode(queryResultObjectDataBean
 					.getMainEntity(), queryDetailsObj);
 			Map sqlIndexMap = putIdColumnsInSql(columnIndex, selectSql, entityIdIndexMap,
-					selectSqlColumnList, outputTreeDataNode,specimenMap);
+					selectSqlColumnList, outputTreeDataNode,specimenMap, columnNameVsAliasMap);
 			selectSql = (String) sqlIndexMap.get(AQConstants.SQL);
 			columnIndex = (Integer) sqlIndexMap.get(AQConstants.ID_COLUMN_ID);
 		}
@@ -972,7 +973,7 @@ public class QueryCSMUtil
 						queryDetailsObj.getUniqueIdNodesMap().get(key);
 					Map sqlIndexMap = putIdColumnsInSql
 					(columnIndex, selectSql, entityIdIndexMap,
-							selectSqlColumnList, outputTreeDataNode,specimenMap);
+							selectSqlColumnList, outputTreeDataNode,specimenMap, columnNameVsAliasMap);
 					selectSql = (String) sqlIndexMap.get(AQConstants.SQL);
 					columnIndex = (Integer) sqlIndexMap.get(AQConstants.ID_COLUMN_ID);
 				}
@@ -1014,7 +1015,7 @@ public class QueryCSMUtil
 	 */
 	private static Map putIdColumnsInSql(int colIndex, String selectSql,
 			Map<EntityInterface, Integer> entityIdIndexMap, List<String> selectSqlColumnList,
-			OutputTreeDataNode outputTreeDataNode, Map<String, String> specimenMap)
+			OutputTreeDataNode outputTreeDataNode, Map<String, String> specimenMap, Map<String, String> columnNameVsAliasMap)
 	{
 		int columnIndex = colIndex;
 		StringBuffer sql = new StringBuffer(selectSql);
@@ -1028,7 +1029,7 @@ public class QueryCSMUtil
 				String sqlColumnName = attributeMetaData.getColumnName().trim();
 				if (attribute.getName().equals(AQConstants.IDENTIFIER))
 				{
-					int index = selectSqlColumnList.indexOf(sqlColumnName);
+					int index = selectSqlColumnList.indexOf(columnNameVsAliasMap.get(sqlColumnName)+" "+sqlColumnName);
 
 					if (index >= 0)
 					{
@@ -1038,7 +1039,7 @@ public class QueryCSMUtil
 					else
 					{
 						//appendColNameToSql(selectSql, sql, sqlColumnName);
-						entityIdIndexMap.put(attribute.getEntity(), columnIndex);
+						entityIdIndexMap.put(attribute.getEntity(), null);
 						columnIndex++;
 						if(outputTreeDataNode.getOutputEntity().getDynamicExtensionsEntity().getName().equals("edu.wustl.catissuecore.domain.Specimen"))
 						{

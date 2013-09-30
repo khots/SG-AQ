@@ -66,11 +66,13 @@ public class QueryCsmBizLogic
             queryParams.setQueryResultObjectDataMap(queryResulObjectDataMap);
             queryParams.setStartIndex(startIndex);
             queryParams.setNoOfRecords(noOfRecords);
+            
             AbstractQueryExecutor queryExecutor = Utility.getQueryExecutor();
             try
             {
-				dataList = queryExecutor.getQueryResultList(queryParams).getResult();
-			}
+            	dataList = queryExecutor.getQueryResultList(queryParams, 
+            			queryDetailsObj.getColumnSize()).getResult();
+            }
             catch (DAOException e)
             {
 				logger.error(e.getMessage(), e);

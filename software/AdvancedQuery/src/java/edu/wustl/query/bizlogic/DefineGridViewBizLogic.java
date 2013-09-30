@@ -93,6 +93,7 @@ public class DefineGridViewBizLogic
 		if (!queryDetailsObj.getUniqueIdNodesMap().isEmpty())
 		{
 			addRootNode(treeDataVector);
+			List<NameValueBean> selectedColumnNameValue = new ArrayList<NameValueBean>();
 			Set keySet = queryDetailsObj.getUniqueIdNodesMap().keySet();
 			Iterator iterator = keySet.iterator();
 			Object identifier;
@@ -107,10 +108,17 @@ public class DefineGridViewBizLogic
 					node = queryDetailsObj.getUniqueIdNodesMap().get(nodeId);
 					if(node.isInView())
 					{
-					  addClassAndAttributeNodes(treeDataVector, node, categorySearchForm,
-  					currentSelectedObj);
+						addClassAndAttributeNodes(treeDataVector, node, 
+								categorySearchForm, currentSelectedObj, selectedColumnNameValue);
 					}
 				}
+			}
+			if (selectedColList != null)
+			{
+				categorySearchForm
+						.setSelColNVBeanList(selectedColList);
+			} else {
+				categorySearchForm.setSelColNVBeanList(selectedColumnNameValue);
 			}
 		}
 	}
@@ -139,10 +147,11 @@ public class DefineGridViewBizLogic
 	 * @param node OutputTreeDataNode node to be added in tree
 	 * @param categorySearchForm action form
 	 * @param currentSelectedObject  OutputTreeDataNode
+	 * @return 
 	 */
 	private void addClassAndAttributeNodes(List<QueryTreeNodeData> treeDataVector,
 			OutputTreeDataNode node, CategorySearchForm categorySearchForm,
-			OutputTreeDataNode currentSelectedObject)
+			OutputTreeDataNode currentSelectedObject, List<NameValueBean> selectedColumnNameValue)
 	{
 		long selectedObjectId = currentSelectedObject.getId();
 		long nodeId = node.getId();
@@ -161,17 +170,13 @@ public class DefineGridViewBizLogic
 		classTreeNode.setParentIdentifier(AQConstants.ROOT);
 		classTreeNode.setParentObjectName("");
 		treeDataVector.add(classTreeNode);
-		boolean isSelectedObject = false;
-		if (selectedObjectId == nodeId)
+		 
+		if (selectedColList == null)
 		{
-			isSelectedObject = true;
-			if (selectedColList == null)
-			{
-				categorySearchForm.setCurrentSelectedNodeInTree(treeClassNodeId);
-			}
+			categorySearchForm.setCurrentSelectedNodeInTree(treeClassNodeId);
 		}
-		addAttributeNodes(treeDataVector, className, treeClassNodeId, categorySearchForm, node
-				.getAttributes(), isSelectedObject);
+		addAttributeNodes(treeDataVector, className, treeClassNodeId, categorySearchForm,
+				selectedColumnNameValue, node.getAttributes());
 	}
 
 	/**
@@ -184,11 +189,10 @@ public class DefineGridViewBizLogic
 	 * @param isSelectedObject whether the object is selected
 	 */
 	private void addAttributeNodes(List<QueryTreeNodeData> treeDataVector, String className,
-			String treeClassNodeId, CategorySearchForm categorySearchForm,
-			List<QueryOutputTreeAttributeMetadata> attributeMetadataList, boolean isSelectedObject)
+			String treeClassNodeId, CategorySearchForm categorySearchForm, List<NameValueBean> selectedColumnNameValue,
+			List<QueryOutputTreeAttributeMetadata> attributeMetadataList)
 	{
 		//List<QueryOutputTreeAttributeMetadata> attributeMetadataList = node.getAttributes();
-		List<NameValueBean> selectedColumnNameValue = new ArrayList<NameValueBean>();
 		AttributeInterface attribute;
 		String attributeName;
 		String attributeDisplayName;
@@ -215,16 +219,8 @@ public class DefineGridViewBizLogic
 			nameValueBean.setValue(treeAttributeNodeId);
 			selectedColumnNameValue.add(nameValueBean);
 		}
-		if (selectedColList != null)
-		{
-			categorySearchForm
-					.setSelColNVBeanList(selectedColList);
-		}
-		else if (isSelectedObject)
-		{
-			categorySearchForm.setSelColNVBeanList(selectedColumnNameValue);
-		}
 	}
+	
 
 	/**
 	 * returns list of selected columns.
@@ -335,7 +331,7 @@ public class DefineGridViewBizLogic
 		List<NameValueBean> selectedColumnNameValue = new ArrayList<NameValueBean>();
 		Map<String, String> columnNameVsAliasMap= queryDetailsObj.getColumnNameVsAliasMap();
 		QueryResultObjectDataBean queryResulObjectDataBean = null;
-
+		Set<String> tableAliasNames = new HashSet<String>();
 		List<EntityInterface> defineViewNodeList = new ArrayList<EntityInterface>();
 		int columnIndex = 0;
 		int totalFileTypeAttributes = 0;
@@ -345,8 +341,7 @@ public class DefineGridViewBizLogic
 		while (iterator.hasNext())
 		{
 			element = iterator.next();
-			queryResulObjectDataBean = queryResultObjecctDataMap.get(element.getTreeDataNode()
-					.getId());
+			queryResulObjectDataBean = queryResultObjecctDataMap.get(element.getTreeDataNode().getId());
 			if (queryResulObjectDataBean == null)
 			{
 				queryResulObjectDataBean = QueryCSMUtil.getQueryResulObjectDataBean(element
@@ -373,7 +368,7 @@ public class DefineGridViewBizLogic
 					queryResulObjectDataBean.setEntityId(columnIndex);
 				//}
 			}
-			if (AQConstants.FILE.equalsIgnoreCase(element.getAttribute().getDataType()))
+			if (AQConstants.FILE.equalsIgnoreCase(element.getAttribute().getDataType())) 
 			{
 				queryResulObjectDataBean.setClobeType(true);
 				Map beanMetadataMap = queryResulObjectDataBean
@@ -386,7 +381,9 @@ public class DefineGridViewBizLogic
 			else
 			{
 				queryResulObjectDataBean.getObjectColumnIds().add(columnIndex);
-				selectedColumnNames.append(columnNameVsAliasMap.get(element.getColumnName())+" "+ element.getColumnName());
+				String actualColumnName = columnNameVsAliasMap.get(element.getColumnName());
+				tableAliasNames.add(actualColumnName.split("\\.")[0]); 
+				selectedColumnNames.append(actualColumnName+" "+ element.getColumnName());
 				selectedColumnNames.append(AQConstants.DELIMETER);
 				definedColumnsList.add(element.getDisplayName());
 				columnIndex++;
@@ -401,7 +398,11 @@ public class DefineGridViewBizLogic
 		{
 			sql = selectedColumnNames.substring(0, selectedColumnNames
 					.lastIndexOf(AQConstants.DELIMETER));
-		}
+		} 
+		
+		String hiddenIdColumns = edu.wustl.query.util.global.Utility
+				.generateHiddenIds(tableAliasNames, selectedColumnNames.toString());
+		
 		if (!outputTermsColumns.isEmpty())
 		{
 			QueryOutputSpreadsheetBizLogic gridBizLogic = new QueryOutputSpreadsheetBizLogic();
@@ -415,19 +416,20 @@ public class DefineGridViewBizLogic
 			sql = sql +", "+ columnNameVsAliasMap.get("temporal");
 			columnIndex = temporalColumnUIBean.getColumnIndex();
 		}
+		queryDetailsObj.setColumnSize(definedColumnsList.size());
 		selectedColumnNames.replace(0, selectedColumnNames.length(), sql);
 		while (mapItr.hasNext())
 		{
 			queryResulObjectDataBean = queryResultObjecctDataMap.get(mapItr.next());
 //			if (queryResulObjectDataBean.getMainEntityIdentifierColumnId() == -1)
 			{
-				Map<EntityInterface, Integer> entityIdIndexMap =
-					new HashMap<EntityInterface, Integer>();
+				Map<EntityInterface, Integer> entityIdIndexMap = new HashMap<EntityInterface, Integer>();
 				sql = QueryCSMUtil.updateEntityIdIndexMap(queryResulObjectDataBean, columnIndex,
 						sql, defineViewNodeList, entityIdIndexMap, queryDetailsObj,specimenMap);
+				
 				selectedColumnNames.replace(AQConstants.ARGUMENT_ZERO, selectedColumnNames
-						.length(), sql);
-				if (queryResulObjectDataBean.isMainEntity())
+						.length(), hiddenIdColumns + sql);
+				/*if (queryResulObjectDataBean.isMainEntity())
 				{
 					EntityInterface entity = queryResulObjectDataBean.getEntity();
 					Integer integer = queryResulObjectDataBean.
@@ -442,7 +444,7 @@ public class DefineGridViewBizLogic
 						queryResulObjectDataBean.setMainEntityIdentifierColumnId
 						(queryResulObjectDataBean.getEntityIdIndexMap().get(mainEntity));
 					}
-				}
+				}*/
 			}
 		}
 		categorySearchForm.setSelColNVBeanList(selectedColumnNameValue);
